@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- Add native Windows installation, per-user Chrome/Edge/Chromium registration and an executable bridge launcher.
+- Handle Windows CLI discovery, Unicode paths, binary messaging and document parsing.
+- Clean up Windows process trees with Job Objects and bound parser memory/CPU usage.
+- Show Alt on Windows and Option on macOS; keep the existing selection behavior.
+- Split bilingual installation guides into Windows and macOS paths.
+- Run installer, backend and browser checks on both operating systems in CI.
+
 ## 0.1.5
 
 - Keep answers visible while scrolling or resizing.

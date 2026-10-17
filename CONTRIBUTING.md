@@ -15,4 +15,4 @@ The extension must continue to leave page answers and submission controls untouc
 
 ## Reporting a bug
 
-Include the extension version, macOS/browser versions, provider, reproduction steps and visible error. A short reproduction on `tests/fixture.html` is ideal. Redact private URLs and document contents before posting screenshots.
+Include the extension version, operating system/browser versions, provider, reproduction steps and visible error. A short reproduction on `tests/fixture.html` is ideal. Redact private URLs and document contents before posting screenshots.

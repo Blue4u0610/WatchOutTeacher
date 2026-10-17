@@ -42,6 +42,12 @@ class PlatformTests(unittest.TestCase):
             self.assertTrue(result['ok'])
             self.assertIn('就绪', result['data']['units'][0]['text'])
 
+    def test_cli_arguments_are_not_shell_interpreted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            arguments = ['', '{"mcpServers":{}}', 'a path with spaces', '中文', 'x&echo bad', '%TEMP%']
+            output = run([sys.executable, '-c', 'import json,sys; print(json.dumps(sys.argv[1:]))', *arguments], directory)
+            self.assertEqual(json.loads(output), arguments)
+
     def test_parent_exit_also_cleans_descendants(self):
         with tempfile.TemporaryDirectory() as directory:
             pidfile = Path(directory)/'child.pid'
@@ -51,17 +57,19 @@ class PlatformTests(unittest.TestCase):
                       f'Path({str(pidfile)!r}).write_text(str(p.pid)); print("ready")')
             self.assertIn('ready', run([sys.executable, '-c', script], directory))
             pid = int(pidfile.read_text())
+            def alive():
+                try:
+                    return psutil.Process(pid).status() != psutil.STATUS_ZOMBIE
+                except psutil.NoSuchProcess:
+                    return False
             try:
                 deadline = time.monotonic()+3
-                while psutil.pid_exists(pid) and time.monotonic()<deadline:
-                    if psutil.Process(pid).status() == psutil.STATUS_ZOMBIE:
-                        break
+                while alive() and time.monotonic()<deadline:
                     time.sleep(.05)
-                self.assertTrue(not psutil.pid_exists(pid) or psutil.Process(pid).status()==psutil.STATUS_ZOMBIE)
+                self.assertFalse(alive(), 'descendant survived process cleanup')
             finally:
-                if psutil.pid_exists(pid):
-                    try: psutil.Process(pid).kill()
-                    except psutil.NoSuchProcess: pass
+                try: psutil.Process(pid).kill()
+                except psutil.NoSuchProcess: pass
 
     def test_native_launcher_roundtrip_and_origin_rejection(self):
         with tempfile.TemporaryDirectory(prefix='桥接 space ') as directory:
@@ -96,7 +104,7 @@ class PlatformTests(unittest.TestCase):
                 for browser in WINDOWS_BROWSERS:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, registry_key(browser,name), 0,
                                         winreg.KEY_READ | winreg.KEY_WOW64_64KEY) as key:
-                        self.assertEqual(winreg.QueryValueEx(key, '')[0], str(manifest))
+                        self.assertEqual(winreg.QueryValueEx(key, '')[0], str(manifest.resolve()))
             finally:
                 unregister_windows(manifest, name)
             for browser in WINDOWS_BROWSERS:

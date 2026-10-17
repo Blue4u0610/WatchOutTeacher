@@ -6,9 +6,9 @@
 <p align="center">One less tab. One more look at the source.</p>
 <p align="center"><a href="README.md">中文</a> · <strong>English</strong></p>
 
-Hold **Option ⌥**, select a question on a webpage, and read the answer beside it. Click **⌄** for the explanation and sources. Select the answer text to copy it.
+Hold **Alt (Windows) or Option ⌥ (macOS)**, select a question on a webpage, and read the answer beside it. Click **⌄** for the explanation and sources. Select the answer text to copy it.
 
-WatchOutTeacher is a course companion for **macOS + Chrome / Edge / Chromium**. It calls your local **Codex CLI** or **Claude Code** and can use documents from the course you select. It never clicks an answer or submits an assignment. The final click is still yours.
+WatchOutTeacher is a course companion for **Windows / macOS + Chrome / Edge / Chromium**. It calls your local **Codex CLI** or **Claude Code** and can use documents from the course you select. It never clicks an answer or submits an assignment. The final click is still yours.
 
 [Install](#installation-from-zero) · [Use](#everyday-use) · [Documents and privacy](#documents-and-privacy) · [Troubleshoot](#troubleshooting) · [Develop](#development)
 
@@ -31,89 +31,16 @@ This screenshot uses a bundled fixture and a mock answer provider. See [testing]
 
 ## Installation, from zero
 
-You need a Mac, Chrome or Edge, and an account that can use one of the supported AI tools. Run the commands below in Terminal: press `⌘ Space`, search for “Terminal”, and open it.
+Choose your operating system, complete **steps 1–4** in its guide, then return here for step 5.
 
-> This is a local extension, not a website to host on a server. GitHub hosts the source; your computer runs the CLI. Safari is not supported yet.
+| System | Installation guide | Ask a question |
+| --- | --- | --- |
+| Windows 11 (native) | [Windows / PowerShell](docs/INSTALL.windows.en.md) | Left Alt + drag |
+| macOS | [macOS / Terminal](docs/INSTALL.macos.en.md) | Option ⌥ + drag |
 
-### 1. Install and sign in to an AI client
+Both guides start with **installing and signing in to Codex CLI or Claude Code**, then cover Python, the download and the local bridge. Installing the ChatGPT or Claude desktop app alone is not enough. Use native CLI installers on Windows; this extension does not call CLIs installed only inside WSL.
 
-Choose one route. You do not need both.
-
-**Route A: a ChatGPT account with Codex CLI — verified with real requests**
-
-Use your existing ChatGPT account if it has Codex access. You need the **Codex command-line tool**; installing the ChatGPT desktop app alone does not complete this step.
-
-Follow the [official Codex installation guide](https://learn.chatgpt.com/docs/codex/cli):
-
-```sh
-curl -fsSL https://chatgpt.com/codex/install.sh | sh
-```
-
-Open a new Terminal window, then sign in:
-
-```sh
-codex --version
-codex login
-codex login status
-```
-
-Choose ChatGPT sign-in and complete the browser flow. The last command should report that you are logged in. Model access and usage limits depend on your account.
-
-**Route B: Claude Code — optional; real-account integration is not yet verified**
-
-Follow the [official Claude Code installation guide](https://code.claude.com/docs/en/setup):
-
-```sh
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-Open a new Terminal window and run:
-
-```sh
-claude --version
-claude
-```
-
-Complete the first-run sign-in flow. The Claude desktop app and the `claude` command are separate installations. WatchOutTeacher checks the CLI flags it needs and reports incompatible versions.
-
-Both routes reuse the CLI's own sign-in state. There is no API-key field to fill in, and the extension does not drive your desktop chat window. If you install only Claude Code, select it as your preferred provider in step 6.
-
-### 2. Install a browser and Python
-
-Install [Chrome](https://www.google.com/chrome/) or [Edge](https://www.microsoft.com/edge), then check Python:
-
-```sh
-python3 --version
-```
-
-You need **Python 3.9+** with SQLite FTS5. If it is missing, use the [macOS installer from python.org](https://www.python.org/downloads/macos/) or run `brew install python` if you already use [Homebrew](https://brew.sh/).
-
-Node.js and Xcode are not needed for everyday use. The initial dependency installation needs an internet connection.
-
-### 3. Download the project
-
-Choose **Code → Download ZIP** on this repository and extract it somewhere you intend to keep. In Terminal, type `cd ` with a trailing space, drag the extracted folder into the window, and press Return.
-
-If you use Git:
-
-```sh
-mkdir -p ~/Projects
-cd ~/Projects
-git clone https://github.com/Blue4u0610/WatchOutTeacher.git
-cd WatchOutTeacher
-```
-
-Run subsequent project commands in this directory, which contains `README.md`, `bridge` and `extension`.
-
-### 4. Install the local bridge
-
-```sh
-python3 scripts/install.py
-```
-
-The installer prints the extension ID and the directory to load. It creates an isolated Python environment and registers the Native Messaging host for your user in Chrome, Edge and Chromium. No `sudo` is needed.
-
-The browser starts the bridge when required. You do not need a terminal left running in the background, and you should not launch `bridge/host.py` yourself.
+No server needed: GitHub hosts the source and your computer runs the bridge. Safari and Firefox are not supported. The UI is currently in Chinese. Automated tests cover macOS and Windows; see [testing](docs/TESTING.md) for the scope of real-account AI checks.
 
 ### 5. Load the extension
 
@@ -137,9 +64,17 @@ The installation check does not generate an answer or prove that the account has
 
 ### 7. Ask a question, then add your notes
 
-On an authorized webpage, hold **⌥**, press the left mouse button over text, and drag across the question and its options. Release the mouse and wait for the answer.
+On an authorized webpage, hold **left Alt (Windows) or Option ⌥ (macOS)**, press the left mouse button over text, and drag across the question and its options. Release the mouse and wait for the answer.
 
 For a predictable first test, run this in the project directory:
+
+**Windows / PowerShell:**
+
+```powershell
+py -3.12 -m http.server 8765 --bind 127.0.0.1 --directory tests
+```
+
+**macOS / Terminal:**
 
 ```sh
 python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
@@ -153,13 +88,13 @@ Next, create a course in settings and import PDF, PPTX, TXT or MD files. Wait fo
 
 | Action | Gesture |
 | --- | --- |
-| Ask | Hold ⌥ and left-drag text; ordinary selection does nothing |
+| Ask | Hold Alt / Option and left-drag text; ordinary selection does nothing |
 | Read the explanation and sources | Click ⌄ at the card's lower-right corner; click again to collapse |
-| Copy | Select text and press ⌘C; an additional copy button appears in the expanded card |
+| Copy | Select text and press Ctrl+C (Windows) or ⌘C (macOS); an additional copy button appears in the expanded card |
 | Scroll or resize | The card stays visible and repositions |
 | Dismiss | Left-click outside the card and clear or replace the original selection |
-| Ask another question | Make a new ⌥ selection; the previous request is cancelled |
-| Resolve a shortcut conflict | Switch to Option + Shift in settings |
+| Ask another question | Make a new Alt / Option selection; the previous request is cancelled |
+| Resolve a shortcut conflict | Switch to Alt + Shift / Option + Shift in settings |
 | Change course | Choose it in settings; subsequent requests use that course |
 
 Right-click, middle-click and Esc do not dismiss the card. Navigation, reloads, removal of the original text node, and course changes clear outdated answers.
@@ -196,13 +131,27 @@ Files are parsed into text when imported and stored in a local SQLite index. Eac
 
 The per-file limit is **30 MB**. Legacy `.ppt`, Word files, images and automatic screenshots are not supported. Keyword retrieval has limits with synonyms, Chinese tokenization and cross-language questions. If nothing matches, the tool reports that it used opening chunks instead. A valid reference identifies supplied material; it does not prove the model's interpretation is correct.
 
-The index lives at `~/Library/Application Support/CourseAssist/courses.sqlite3`. The old directory name is retained for existing installations. Selected text, question context and retrieved excerpts go to your chosen AI service through its CLI: **this is not offline inference**. Removing a document deletes its index, not the original file.
+The local index lives at:
+
+- Windows: `%LOCALAPPDATA%\WatchOutTeacher\courses.sqlite3`
+- macOS: `~/Library/Application Support/CourseAssist/courses.sqlite3` (retained for existing installations)
+
+ Selected text, question context and retrieved excerpts go to your chosen AI service through its CLI: **this is not offline inference**. Removing a document deletes its index, not the original file.
 
 Question and answer bodies are not kept in diagnostic logs. Diagnostics record the provider, requested model and effort, error category, duration and retrieval counts. Model access, subscriptions and service charges follow the account signed in to the CLI.
 
 ## Update or uninstall
 
 For a Git installation, close question/settings pages and disable WatchOutTeacher in the browser's extension manager. In the project directory, run:
+
+**Windows:**
+
+```powershell
+git pull --ff-only
+py -3.12 scripts/install.py
+```
+
+**macOS:**
 
 ```sh
 git pull --ff-only
@@ -213,22 +162,21 @@ Enable and **Reload** the extension, then refresh your question page. For ZIP in
 
 To uninstall:
 
-```sh
-python3 scripts/install.py --uninstall
-```
+Windows: `py -3.12 scripts/install.py --uninstall`. macOS: `python3 scripts/install.py --uninstall`.
 
-Remove the extension from the browser. Course data is retained. To remove it too, quit the browser, use Finder's “Go to Folder” for `~/Library/Application Support/CourseAssist`, and move that folder to Trash.
+Remove the extension from the browser. Course data is retained. To remove it too, quit the browser and delete the data folder listed above for your system. Windows registration is per-user and requires no administrator access.
 
 ## Troubleshooting
 
 | Symptom | First check |
 | --- | --- |
 | Missing manifest | Load the project's `extension` subfolder |
-| Native host missing or exited | Rerun the installer and reload the extension; keep the runtime in Application Support |
+| Native host missing or exited | Rerun the installer for your system and reload the extension; keep its generated runtime path |
 | Bridge disconnected | Use the reconnect button in settings, refresh the page and select again |
-| No response to selection | Check site access, refresh, hold ⌥ before pressing the mouse; editable fields are excluded and selections are limited to 8,000 characters |
+| No response to selection | Check site access, refresh, hold Alt / Option before pressing the mouse; editable fields are excluded and selections are limited to 8,000 characters |
 | Canvas embedded questions do not respond | Authorize the question iframe's own domain or choose all-site access |
 | Authentication or quota error | Run `codex login status`, or open `claude` and follow the account prompts |
+| Windows cannot find the CLI | Use the official native installer and restart the browser after sign-in; WSL and npm `.cmd` wrappers are not invoked |
 | Unsupported CLI flags | Update the CLI and check again; see [tested versions](docs/TESTING.md) |
 | Missing options or formulas | Select the complete question; images and unreadable formulas are not sent |
 | No course reference | Check import warnings, the selected course and retrieval counts; insufficient material may lead to a general-knowledge answer |
@@ -238,9 +186,10 @@ Remove the extension from the browser. Course data is retained. To remove it too
 
 Python is required to run the bridge. Browser tests additionally need **Node.js 22+**. Tests use temporary browser profiles and course databases, not your everyday browser account.
 
+Create the environment with `py -3.12 -m venv .venv` on Windows or `python3 -m venv .venv` on macOS. Then, on either system:
+
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+node scripts/python.mjs -m pip install -r requirements.txt
 npm ci
 npx playwright install chromium
 npm test

@@ -1,9 +1,10 @@
 {
   "mode": "MOCK PROVIDER",
-  "date": "2026-10-17T11:31:18.706Z",
+  "date": "2026-10-17T12:20:23.137Z",
   "browser": "141.0.7390.37",
   "passed": [
     "real extension → Native Messaging → isolated host connection",
+    "platform-specific modifier labels",
     "CLI catalog dropdown persists selected model across reload",
     "model-supported effort choices persist across reload",
     "model switch blocks unsupported effort without silently changing it",
@@ -13,7 +14,7 @@
     "normal selection sends no request",
     "editable region excluded",
     "saved effort reaches answer provider and diagnostics",
-    "MOCK Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup",
+    "MOCK Alt/Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup",
     "answer click does not expand; native drag selects answer text for copying",
     "Esc preserves answer",
     "bottom-right chevron expands English explanation",
@@ -33,7 +34,7 @@
     "frame-local overlay: localhost",
     "frame-local overlay: 127.0.0.1",
     "oversized multiline selection is rejected without calling provider",
-    "configurable Option + Shift gesture",
+    "configurable Alt/Option + Shift gesture",
     "course change cancels pending answer and closes overlay",
     "native host disconnect shows an actionable error",
     "native reconnect succeeds",
@@ -42,91 +43,91 @@
   "diagnostics": [
     {
       "id": 11,
-      "time": "2026-10-17 11:31:17",
-      "request": "1bf03450-6849-4a2a-b2ad-9ba96a743aed",
+      "time": "2026-10-17 12:20:22",
+      "request": "291575eb-20a0-4fdc-9503-61023574ff2a",
       "provider": null,
       "code": "cancelled",
-      "details": "{\"elapsed_ms\": 106}"
+      "details": "{\"elapsed_ms\": 110}"
     },
     {
       "id": 10,
-      "time": "2026-10-17 11:31:15",
-      "request": "cfe790cc-1b65-43d7-96b1-0617f94d09a5",
+      "time": "2026-10-17 12:20:19",
+      "request": "c5858273-6054-4bd1-b804-95103e251248",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 705}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 704}"
     },
     {
       "id": 9,
-      "time": "2026-10-17 11:31:12",
-      "request": "af71c216-a2d0-4e48-9658-9133cc8bdf2d",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
-    },
-    {
-      "id": 8,
-      "time": "2026-10-17 11:31:11",
-      "request": "849a57f7-af39-4192-875e-7eaa8cbe44a9",
+      "time": "2026-10-17 12:20:17",
+      "request": "47a24286-c9b0-4f90-aa2e-cca11ca08f60",
       "provider": "codex",
       "code": "ok",
       "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
     },
     {
-      "id": 7,
-      "time": "2026-10-17 11:31:10",
-      "request": "9febe093-5ec7-48fb-9a17-f1b4b729614e",
+      "id": 8,
+      "time": "2026-10-17 12:20:16",
+      "request": "639aa1d5-c058-4d55-9c56-b27dc7cd6dd0",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 706}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 253}"
+    },
+    {
+      "id": 7,
+      "time": "2026-10-17 12:20:15",
+      "request": "f913f8fc-67b6-4fd7-a07b-4481054a2c7a",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 702}"
     },
     {
       "id": 6,
-      "time": "2026-10-17 11:31:09",
-      "request": "d341503b-b1a6-4f79-9e41-748c695a53a6",
+      "time": "2026-10-17 12:20:13",
+      "request": "ca9ae756-8b86-4766-a0f6-51325a251aed",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
     },
     {
       "id": 5,
-      "time": "2026-10-17 11:31:08",
-      "request": "40bcc93e-5ebd-49e9-b4a5-51296c70d0ae",
+      "time": "2026-10-17 12:20:12",
+      "request": "4dec9529-a1ed-489e-a9d7-a15f4e2bec28",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 707}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 702}"
     },
     {
       "id": 4,
-      "time": "2026-10-17 11:31:04",
-      "request": "02663cc4-27ae-42af-9595-2eeff3476772",
+      "time": "2026-10-17 12:20:08",
+      "request": "87f8c473-b080-46c1-83fc-42010027fca9",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 255}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
     },
     {
       "id": 3,
-      "time": "2026-10-17 11:31:03",
-      "request": "34375112-e0d5-49cf-b6c2-53c4f7b0ab29",
+      "time": "2026-10-17 12:20:07",
+      "request": "a2be0862-2f56-4855-afb5-0b392e16c60e",
       "provider": null,
       "code": "cancelled",
-      "details": "{\"elapsed_ms\": 27}"
+      "details": "{\"elapsed_ms\": 31}"
     },
     {
       "id": 2,
-      "time": "2026-10-17 11:31:02",
-      "request": "92314d07-c451-4804-8d0f-46be564a106c",
+      "time": "2026-10-17 12:20:07",
+      "request": "a592d23b-9df3-41a6-88ef-c5c15029ca58",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 254}"
     },
     {
       "id": 1,
-      "time": "2026-10-17 11:31:01",
-      "request": "ad9e9886-6cf4-4c89-95aa-4d21bdea0b01",
+      "time": "2026-10-17 12:20:06",
+      "request": "93cf94c3-0c78-467b-9a68-3465e9f75e79",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 709}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
     }
   ]
 }

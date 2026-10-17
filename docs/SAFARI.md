@@ -1,6 +1,6 @@
 # Safari support
 
-WatchOutTeacher currently ships a Chromium Manifest V3 extension and a macOS Native Messaging host for Chrome, Edge and Chromium. There is no installable Safari app yet.
+WatchOutTeacher currently ships a Chromium Manifest V3 extension and a Windows / macOS Native Messaging host for Chrome, Edge and Chromium. There is no installable Safari app yet.
 
 A manifest conversion alone is not enough: Safari sends native messages through a containing macOS app, rather than Chrome's `NativeMessagingHosts` registration.
 

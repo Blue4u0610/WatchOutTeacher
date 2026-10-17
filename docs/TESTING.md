@@ -1,39 +1,46 @@
 # Testing
 
-The current local baseline is **28 Python tests and 35 browser checks**, recorded on 2026-10-17 for version 0.1.5. Browser checks run the real extension and Native Messaging host with a mock answer provider. They do not claim to test every school website or model.
+Version **0.2.0** adds native Windows support. The suite contains **35 Python tests** (two Windows-only tests are skipped on macOS), **36 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
 
 ## Run locally
 
-From the repository root:
+Create `.venv` from the repository root:
+
+- Windows / PowerShell: `py -3.12 -m venv .venv`
+- macOS / Terminal: `python3 -m venv .venv`
+
+Then, on either system:
 
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+node scripts/python.mjs -m pip install -r requirements.txt
 npm ci
 npx playwright install chromium
 npm test
 npm run test:browser
 ```
 
-The browser runner prefers the installed bridge Python when available, avoiding macOS privacy restrictions on Documents checkouts; otherwise it uses `.venv/bin/python`. Set `COURSE_ASSIST_TEST_PYTHON` to an absolute Python executable if your test environment is elsewhere. It creates a temporary browser profile, host registration and course database, then removes them on exit. Results and screenshots go to the ignored `test-results/` directory.
+The Node wrapper chooses `.venv/Scripts/python.exe` on Windows or `.venv/bin/python` on macOS. The macOS browser runner prefers the installed bridge interpreter when present, avoiding Documents privacy restrictions; install current requirements into that interpreter too when dependencies change. `COURSE_ASSIST_TEST_PYTHON` can select an explicit absolute interpreter path.
 
-The GitHub Actions workflow runs these same checks on macOS without AI credentials. Live model tests are deliberately excluded from CI.
+The browser runner creates a temporary profile, a unique Native Messaging host name, a free local fixture port and a course database. On Windows, its per-user test registry keys are removed afterward; the production host registration is never replaced. Results and screenshots go to the ignored `test-results/` directory.
+
+[GitHub Actions](https://github.com/Blue4u0610/WatchOutTeacher/actions/workflows/test.yml) runs Python 3.12 and Node 22 on `macos-latest` and `windows-latest`. The Windows runner is Windows Server, so it verifies native Windows code and Chromium integration rather than every Windows 11 desktop configuration. Each run uploads screenshots/results as platform-specific artifacts. The installer lifecycle smoke test is restricted to disposable CI machines and checks Unicode/space paths, data preservation across reinstall and registration removal on uninstall. No AI credentials are supplied to CI.
 
 ## Coverage
 
 | Area | Checks |
 | --- | --- |
-| Local bridge | Message framing and size limits, caller identity, chunked imports, process cancellation and timeouts |
+| Local bridge | Binary message framing, caller identity, Unicode paths/stdio, chunked imports, CLI argument quoting, cancellation/timeouts and descendant cleanup |
+| Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
 | Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation and index deletion |
 | Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments |
 | Settings | Persistent model/effort choices, catalog filtering and unsupported combinations |
-| Browser | Option selection, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
+| Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
 | Lifecycle | Scroll/resize retention, stale-result suppression, navigation, course changes, disconnect/reconnect and reload |
 | Layout | Viewport edges, light/dark themes, CSS zoom, same-origin and cross-origin frames |
 
 Headless tests pre-grant only the two local fixture origins in a temporary extension copy. The shipped manifest grants no website access by default. Native permission dialogs require a manual check.
 
-[Latest mock browser record](evidence/browser-results.json)
+[Local macOS mock browser record](evidence/browser-results.json) · For Windows results, open the corresponding CI run.
 
 ## Real Codex checks
 
@@ -49,7 +56,9 @@ To run the current live suite, sign in to Codex and run `npm run test:live`. It 
 
 ## Manual checks still needed
 
-- Real website permission dialogs and unusual browser/extension combinations.
+Windows real-account Codex / Claude login and inference have not been exercised in CI. Historical live Codex evidence below is macOS-only.
+
+- Real website permission dialogs, Chrome / Edge installation variants and unusual browser/extension combinations.
 - A school's actual Canvas Classic / New Quizzes markup and iframe domains.
 - Real Claude Code authentication, responses and fallback; the adapter currently has contract tests only.
 - Browser menu zoom, operating-system shortcut conflicts and very small embedded frames.

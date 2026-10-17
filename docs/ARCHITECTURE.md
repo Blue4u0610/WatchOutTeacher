@@ -4,7 +4,7 @@
 
 ```text
 已授权网页 / 独立 frame
-  content.js：可信 pointerdown 的 Option 状态 + 有效文本选区
+  content.js：可信 pointerdown 的 Alt / Option 状态 + 有效文本选区
       ↓ 扩展内部 Port（不监听 window.postMessage）
   background.js：校验 sender、域名权限、操作白名单、长度
       ↓ chrome.runtime.connectNative
@@ -25,9 +25,9 @@ Native Messaging 清单固定扩展 ID，宿主还校验启动参数中的 origi
 
 ## 文件与存储
 
-安装副本、虚拟环境、SQLite 位于当前用户 Application Support。目录默认 0700，数据库及注册清单 0600，宿主 umask 077。源码独立保留。浏览器不直接读取任意本地路径；用户文件选择器读到的内容以 192 KiB 分块传给宿主，后者只接受已分配上传 token、严格偏移与预期总大小。
+安装副本、虚拟环境、SQLite 位于当前用户数据目录：macOS 为 Application Support，Windows 为 LocalAppData。macOS 目录默认 0700，数据库及注册清单 0600，宿主 umask 077；Windows 使用用户配置目录继承的 ACL，POSIX mode 不等同于 Windows 访问控制。源码独立保留。浏览器不直接读取任意本地路径；用户文件选择器读到的内容以 192 KiB 分块传给宿主，后者只接受已分配上传 token、严格偏移与预期总大小。
 
-临时上传文件以随机 ID 命名，不使用用户文件名构造路径。PDF/PPTX 解析在单独进程中执行，45 秒墙钟、35 秒 CPU、1 GiB RSS 检测上限（macOS 定期检查）与输出大小限制。RSS 检测不是精确的瞬时硬内存沙箱；CPU/文件大小/解压体积限制共同缩小风险。PPTX 解压总大小限制 150 MiB。正常请求结束会删除临时原文件，仅保存可提取的正文和索引。强制 SIGKILL 或整机崩溃不保证清理系统临时目录。
+临时上传文件以随机 ID 命名，不使用用户文件名构造路径。PDF/PPTX 解析在单独进程中执行，45 秒墙钟与输出大小限制。macOS 使用 35 秒 CPU 限额和 1 GiB RSS 定期检测；Windows 使用 Job Object 的 35 秒总用户 CPU 时间及 1 GiB 总提交内存限制，并监测 RSS。定期 RSS 检测不是瞬时硬内存沙箱。PPTX 解压总大小限制 150 MiB。正常请求结束会删除临时原文件，仅保存可提取的正文和索引。强制 SIGKILL 或整机崩溃不保证清理系统临时目录。
 
 每门课的文档与 chunks 通过外键隔离。删除文档/课程触发 FTS5 删除；SQLite WAL 支持同时读取。课程变更取消活动请求。每次生成都重新读取当前课程资料；不依赖模型会话状态。
 
@@ -45,7 +45,7 @@ Codex 的限制选项经过本机 0.153.4 真实调用。Claude 的参数来自�
 
 引用校验验证的是“确实存在且确实发送过的来源”，不是自然语言推论的语义正确性。答案仍需要使用者核对。模型正常返回 insufficient 会直接显示，不作为后端故障。
 
-总预算采用 monotonic deadline；主用至多使用剩余时间 65%，备用使用剩余预算。全部失败保留每个 Provider 的错误类别。格式失败零额外修复调用，至多一次备用；不无限重试。主动取消不会备用。取消/超时先 SIGTERM，随后对整个独立子进程组 SIGKILL 并 wait；取消事件也参与能力检测和锁等待。宿主正常 EOF/SIGTERM 会取消活动请求并等待清理。
+总预算采用 monotonic deadline；主用至多使用剩余时间 65%，备用使用剩余预算。全部失败保留每个 Provider 的错误类别。格式失败零额外修复调用，至多一次备用；不无限重试。主动取消不会备用。macOS 取消/超时先 SIGTERM，随后对整个独立子进程组 SIGKILL 并 wait。Windows 子进程以暂停状态创建，加入带 KILL_ON_JOB_CLOSE 的 Job Object 后才恢复；正常结束、取消及超时均关闭 job，清理后代进程，即使最初的父进程已退出。取消事件也参与能力检测和锁等待。宿主正常 EOF/SIGTERM 会取消活动请求并等待清理。
 
 ## UI 生命周期
 
@@ -69,3 +69,12 @@ pointerdown 记录左键与修饰键，pointerup 检查拖动距离和非空选�
 - 没有语义准确率估计、免费调用承诺、自动答题或提交功能。
 
 Codex 的 `codex_effort` 设置默认空字符串（自动），持久化在 SQLite。非空值经过枚举校验后作为 TOML 配置参数 `model_reasoning_effort` 传递；不改动全局配置。目录返回支持档位与默认档位，前端联动模型选择并阻止保存已知不支持的组合。目录失败时保留用户选择。备用 Claude 不继承 Codex 强度。诊断只记录请求值，不将其描述为服务端确认值。
+
+
+## Windows 安装与运行
+
+原生 Windows 安装在 `%LOCALAPPDATA%\WatchOutTeacher`，macOS 沿用 `~/Library/Application Support/CourseAssist`。安装器创建隔离虚拟环境，通过 distlib 生成 Windows `.exe` 启动器，在 HKCU 的 Chrome / Edge / Chromium / Chrome for Testing NativeMessagingHosts 项注册绝对 manifest 路径。无管理员权限要求，扩展 ID 与消息宿主名不变。启动器只包含本地安装路径，不包含凭据。
+
+Windows CLI 搜索原生安装目录与绝对 PATH 项，只接受 `.exe`，不运行 npm 包装脚本或 WSL。继承登录所需的用户目录、系统目录和代理变量，不继承 API Key、PYTHONPATH 或 PYTHONHOME。宿主 stdio 使用二进制模式，文件与 CLI 输出明确使用 UTF-8。SQLite 事务结束显式关闭连接，避免 Windows 文件锁妨碍删除临时数据库。
+
+浏览器测试为每次运行生成独立宿主名和临时注册表项，不覆盖日常安装；测试结束注销。生产安装器生命周期测试仅允许在一次性 CI 机器上运行。

@@ -6,9 +6,9 @@
 <p align="center">少切一个窗口，多看一眼出处。</p>
 <p align="center"><strong>中文</strong> · <a href="README.en.md">English</a></p>
 
-按住 **Option ⌥** 划选网页上的问题，答案就出现在旁边。需要解释和出处时，点右下角的 **⌄**；需要复制时，直接选中文字。
+按住 **Alt（Windows）或 Option ⌥（macOS）** 划选网页上的问题，答案就出现在旁边。需要解释和出处时，点右下角的 **⌄**；需要复制时，直接选中文字。
 
-WatchOutTeacher 是一个运行在 **macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI** 或 **Claude Code** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
+WatchOutTeacher 是一个运行在 **Windows / macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI** 或 **Claude Code** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
 
 [安装](#安装从零开始) · [使用](#日常使用) · [资料与隐私](#资料怎么用数据去哪儿) · [排障](#遇到问题) · [开发](#开发与测试)
 
@@ -31,89 +31,16 @@ WatchOutTeacher 是一个运行在 **macOS + Chrome / Edge / Chromium** 上的�
 
 ## 安装：从零开始
 
-准备一台 Mac、Chrome 或 Edge，以及可登录的 AI 服务账户。下面的命令在 macOS「终端」中运行；按 `⌘ Space` 搜索“终端”即可打开。
+选择你的系统，完成对应指南的 **第 1–4 步**，然后继续下方第 5 步。
 
-> 这是本机扩展，不是要部署到服务器的网站。GitHub 存放代码；回答由你电脑上的 CLI 发起。Safari 暂不支持，浏览器界面目前为中文。
+| 系统 | 安装入口 | 提问快捷键 |
+| --- | --- | --- |
+| Windows 11（原生环境） | [Windows：PowerShell 安装指南](docs/INSTALL.windows.md) | 左 Alt + 鼠标拖选 |
+| macOS | [macOS：终端安装指南](docs/INSTALL.macos.md) | Option ⌥ + 鼠标拖选 |
 
-### 1. 安装并登录 AI 客户端
+两条路线都从 **安装并登录 Codex CLI 或 Claude Code** 开始，再安装 Python、下载项目和注册本地桥接。仅安装 ChatGPT / Claude 桌面应用还不够。Windows 请选择原生 CLI 安装器；只装在 WSL 里的 CLI 不会被本插件调用。
 
-选一条路线即可，不必两个都装。
-
-**路线 A：ChatGPT 账户 + Codex CLI（已完成真实调用验证）**
-
-如果平时使用 ChatGPT，继续用自己的账户即可。这里需要的是 **Codex 命令行工具**，仅安装 ChatGPT 桌面应用不会自动完成这一步。
-
-按 [Codex 官方安装说明](https://learn.chatgpt.com/docs/codex/cli) 安装：
-
-```sh
-curl -fsSL https://chatgpt.com/codex/install.sh | sh
-```
-
-重新打开终端，然后登录：
-
-```sh
-codex --version
-codex login
-codex login status
-```
-
-按提示选择 ChatGPT 登录并完成浏览器验证。最后一条命令应显示已登录。是否有模型调用权限、额度多少，以你的账户为准。
-
-**路线 B：Claude Code（可选，适配器尚未完成真实账户验证）**
-
-按 [Claude Code 官方安装说明](https://code.claude.com/docs/en/setup) 安装：
-
-```sh
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-重新打开终端，运行：
-
-```sh
-claude --version
-claude
-```
-
-跟随首次启动的登录流程。Claude 桌面应用与这里的 `claude` 命令不是一回事。插件会检查 CLI 所需参数；不兼容的版本会提示更新，不会偷偷换一套调用方式。
-
-两条路线都使用 CLI 自己的登录状态。插件不需要你填写 API Key，也不会接管桌面聊天框。如果只安装了 Claude，稍后记得在设置中把首选服务改为 Claude Code。
-
-### 2. 准备浏览器和 Python
-
-安装 [Chrome](https://www.google.com/chrome/) 或 [Edge](https://www.microsoft.com/edge)，然后检查 Python：
-
-```sh
-python3 --version
-```
-
-需要 **Python 3.9+**，且自带 SQLite FTS5。没有 Python 时可用 [python.org 的 macOS 安装包](https://www.python.org/downloads/macos/)，或通过已安装的 [Homebrew](https://brew.sh/) 执行 `brew install python`。
-
-日常使用不需要 Node.js 或 Xcode；第一次安装依赖需要联网。
-
-### 3. 下载项目
-
-在本页点击 **Code → Download ZIP**，解压到准备长期保留的位置。终端输入 `cd `（末尾留一个空格），把解压后的项目文件夹拖进终端，再按回车。
-
-熟悉 Git 的话，也可以：
-
-```sh
-mkdir -p ~/Projects
-cd ~/Projects
-git clone https://github.com/Blue4u0610/WatchOutTeacher.git
-cd WatchOutTeacher
-```
-
-下面所有项目命令，都在包含 `README.md`、`bridge`、`extension` 的这个目录里执行。
-
-### 4. 安装本地桥接
-
-```sh
-python3 scripts/install.py
-```
-
-看到扩展 ID 和“加载扩展目录”后，桥接安装完成。安装器会创建独立 Python 环境，为当前用户注册 Chrome / Edge / Chromium 的本地通信入口，不需要 `sudo`。
-
-浏览器会按需启动桥接。无需另开一个终端“挂着服务”，也不要直接运行 `bridge/host.py`。
+这是本机扩展，不需要租服务器。Safari / Firefox 暂不支持，插件界面目前为中文。自动测试覆盖 macOS 与 Windows；真实 AI 账户调用的验证范围见[测试说明](docs/TESTING.md)。
 
 ### 5. 加载扩展
 
@@ -137,9 +64,17 @@ python3 scripts/install.py
 
 ### 7. 试一道题，再导入课件
 
-在获授权的网页上，按住 **⌥**，从文字处按下鼠标左键并拖选题干和选项。松开后，等待答案出现。
+在获授权的网页上，按住 **左 Alt（Windows）或 Option ⌥（macOS）**，从文字处按下鼠标左键并拖选题干和选项。松开后，等待答案出现。
 
 想先用固定示例？在项目目录运行：
+
+**Windows（PowerShell）：**
+
+```powershell
+py -3.12 -m http.server 8765 --bind 127.0.0.1 --directory tests
+```
+
+**macOS（终端）：**
 
 ```sh
 python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
@@ -153,13 +88,13 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
 
 | 想做什么 | 怎么操作 |
 | --- | --- |
-| 提问 | 按住 ⌥，左键拖选文字；普通划词不会提问 |
+| 提问 | Windows 按住左 Alt，macOS 按住 Option ⌥，左键拖选；普通划词不会提问 |
 | 看解释、出处 | 点击答案框右下角 ⌄；再点一次收起 |
-| 复制答案 | 直接选中文字，按 ⌘C；展开后也有“复制”按钮 |
+| 复制答案 | 直接选中文字，Windows 按 Ctrl+C，macOS 按 ⌘C；展开后也有“复制”按钮 |
 | 滚动、缩放 | 答案保留，并重新定位到可见区域 |
 | 关闭答案 | 左键点击浮层外，并取消或替换原选区 |
-| 换一道题 | 再次 ⌥ 拖选；旧请求会取消 |
-| 快捷键冲突 | 设置中改为 Option + Shift |
+| 换一道题 | 再次 Alt / Option 拖选；旧请求会取消 |
+| 快捷键冲突 | 设置中改为 Alt + Shift / Option + Shift |
 | 换课程 | 在设置页切换；新问题使用新课程的资料 |
 
 右键、中键和 Esc 不关闭浮层。页面跳转、刷新、原文字节点被移除或课程变更，会清理旧答案。
@@ -196,13 +131,27 @@ Codex CLI / Claude Code → 对应 AI 服务
 
 单个文件上限 **30 MB**。旧 `.ppt`、Word、图片和自动截图目前不支持。关键词检索对同义词、中文分词和跨语言问题有限；没有命中时会提示回退到开头片段。引用说明“提供过哪份材料”，不等于推论一定正确。
 
-课程索引保存在 `~/Library/Application Support/CourseAssist/courses.sqlite3`。目录沿用旧名称以兼容已有安装。选区、题目上下文和检索片段会经 CLI 发往所选 AI 服务，因此**不是离线问答**。删除资料会删除本地索引，不会删除原文件。
+课程索引保存在本机：
+
+- Windows：`%LOCALAPPDATA%\WatchOutTeacher\courses.sqlite3`
+- macOS：`~/Library/Application Support/CourseAssist/courses.sqlite3`（沿用旧目录以兼容已有安装）
+
+选区、题目上下文和检索片段会经 CLI 发往所选 AI 服务，因此**不是离线问答**。删除资料会删除本地索引，不会删除原文件。
 
 默认不保存题目和答案正文日志。诊断只记录服务、请求的模型与强度、错误类别、用时及检索数量。模型权限、订阅额度和服务费用以 CLI 所登录账户为准。
 
 ## 更新与卸载
 
 **Git 安装：** 先关闭题目页和设置页，在扩展管理页禁用 WatchOutTeacher，然后在项目目录运行：
+
+**Windows：**
+
+```powershell
+git pull --ff-only
+py -3.12 scripts/install.py
+```
+
+**macOS：**
 
 ```sh
 git pull --ff-only
@@ -213,22 +162,21 @@ python3 scripts/install.py
 
 **卸载：**
 
-```sh
-python3 scripts/install.py --uninstall
-```
+Windows：`py -3.12 scripts/install.py --uninstall`；macOS：`python3 scripts/install.py --uninstall`。
 
-再从浏览器移除扩展。课程资料默认保留；如需一并移除，退出浏览器后在 Finder 中前往 `~/Library/Application Support/CourseAssist`，将这个文件夹移到废纸篓。
+再从浏览器移除扩展。课程资料默认保留；如需一并移除，退出浏览器后删除上述系统对应的数据文件夹。Windows 安装器只注册当前用户，不需要管理员权限。
 
 ## 遇到问题
 
 | 现象 | 先检查这里 |
 | --- | --- |
 | 找不到 manifest | 加载的是项目里的 `extension` 文件夹吗？ |
-| 找不到本地宿主 / 宿主退出 | 重新运行安装器，再重新加载扩展；不要将运行副本改回 Documents 中的虚拟环境 |
+| 找不到本地宿主 / 宿主退出 | 按对应系统重新运行安装器，再重新加载扩展；Windows 确认使用原生 Python，macOS 保持安装器生成的运行路径 |
 | 桥接连接断开 | 设置页点“重连 / 刷新资料”，刷新题目页再划选 |
-| 划词没反应 | 网站授权、页面刷新、鼠标按下前按住 ⌥；输入框内不触发，选区最多 8,000 字符 |
+| 划词没反应 | 网站授权、页面刷新、鼠标按下前按住 Alt / Option；输入框内不触发，选区最多 8,000 字符 |
 | Canvas 内层题目没反应 | 题目可能来自另一个 iframe 域名；授权该域名，或自行选择所有网站授权 |
 | 认证或额度错误 | 终端运行 `codex login status`，或打开 `claude` 检查登录及账户提示 |
+| Windows 检测不到 CLI | 使用官方原生安装器，安装并登录后彻底退出并重开浏览器；不调用 WSL 或 npm 的 `.cmd` 包装器 |
 | CLI 参数不兼容 | 更新 CLI 后重新检测；[已验证环境](docs/TESTING.md) 列出版本 |
 | 回答缺少选项或公式 | 补选完整题目；图片与不可提取公式目前不会传给模型 |
 | 资料没有被引用 | 检查导入警告、当前课程和本题检索数量；资料不足时可能使用通用知识 |
@@ -238,9 +186,10 @@ python3 scripts/install.py --uninstall
 
 运行需要 Python；浏览器测试另外需要 **Node.js 22+**。测试使用临时浏览器配置和测试课程，不读取日常浏览器账户。
 
+Windows 先运行 `py -3.12 -m venv .venv`；macOS 运行 `python3 -m venv .venv`。接下来两边相同：
+
 ```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+node scripts/python.mjs -m pip install -r requirements.txt
 npm ci
 npx playwright install chromium
 npm test
