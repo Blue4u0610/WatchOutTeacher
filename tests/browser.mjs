@@ -33,8 +33,9 @@ execFileSync(python,[path.join(root,'tests/make_fixtures.py'),resultDir],{env:{.
 const hostManifest=path.join(profile,'NativeMessagingHosts',hostName+'.json');
 const setupScript=path.join(root,'tests/native_fixture.py');
 execFileSync(python,[setupScript,'install',profile,hostName,eid,live?'live':'mock'],{env:{...process.env,PYTHONUTF8:'1'}});
-const server=http.createServer(async(req,res)=>{try{const file=path.basename(new URL(req.url,'http://localhost').pathname)||'fixture.html';if(!['fixture.html','frame.html'].includes(file))throw Error();res.setHeader('Content-Type','text/html; charset=utf-8');res.end(await fs.readFile(path.join(root,'tests',file)));}catch{res.writeHead(404).end();}});
-await new Promise(resolve=>server.listen(8765,resolve));
+const server=http.createServer(async(req,res)=>{try{const file=path.basename(new URL(req.url,'http://localhost').pathname)||'fixture.html';if(!['fixture.html','frame.html'].includes(file))throw Error();res.setHeader('Content-Type','text/html; charset=utf-8');res.end((await fs.readFile(path.join(root,'tests',file),'utf8')).replaceAll(':8765',':'+server.address().port));}catch{res.writeHead(404).end();}});
+await new Promise(resolve=>server.listen(0,resolve));
+const port=server.address().port;
 const results=[];
 let context;
 function pass(name){results.push(name);console.log('PASS',name);}
@@ -93,9 +94,9 @@ try {
  await opts.screenshot({path:path.join(resultDir,'settings-mobile.png'),fullPage:true});
  await opts.setViewportSize({width:1100,height:900});
  // Exercise settings UI with fixture origins pre-granted in this test copy.
- await opts.locator('#site').fill('http://localhost:8765'); await opts.locator('#site-form button').click();
+ await opts.locator('#site').fill(`http://localhost:${port}`); await opts.locator('#site-form button').click();
  await waitFor(async()=> (await opts.locator('#status').textContent()).includes('网站已授权'));
- await opts.locator('#site').fill('http://127.0.0.1:8765'); await opts.locator('#site-form button').click();
+ await opts.locator('#site').fill(`http://127.0.0.1:${port}`); await opts.locator('#site-form button').click();
  await waitFor(async()=> (await opts.locator('#sites').textContent()).includes('127.0.0.1'));
  pass('site settings + dynamic injection (fixture origins pre-granted for headless test)');
  await opts.locator('#course-name').fill('Lumen test course');await opts.locator('#course-form button').click();
@@ -103,7 +104,7 @@ try {
  await opts.locator('#files').setInputFiles(live ? [path.join(resultDir,'material.pdf'),path.join(resultDir,'material.pptx')] : path.join(root,'tests/material.md'));
  await waitFor(async()=> (await opts.locator('#status').textContent()).includes('资料已导入'));
  pass('settings UI course creation + chunked document import');
- const page=await context.newPage();await page.goto('http://localhost:8765/fixture.html');
+ const page=await context.newPage();await page.goto(`http://localhost:${port}/fixture.html`);
  const session=await context.newCDPSession(page);
  async function cardText() {
    const {root:dom}=await session.send('DOM.getDocument',{depth:-1,pierce:true});
