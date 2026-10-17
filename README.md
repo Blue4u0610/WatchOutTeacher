@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">WatchOutTeacher</h1>
-<p align="center">少切一个窗口，多看一眼出处。</p>
+<p align="center">Created by Blue</p>
 <p align="center"><strong>中文</strong> · <a href="README.en.md">English</a></p>
 
 按住 **Alt（Windows）或 Option ⌥（macOS）** 划选网页上的问题，答案就出现在旁边。需要解释和出处时，点右下角的 **⌄**；需要复制时，直接选中文字。
