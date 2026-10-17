@@ -3,6 +3,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 import psutil
 
 
@@ -82,21 +83,30 @@ def start(args, *, memory_limit=None, **kwargs):
         raise
 
 
+def signal_group(pid, sig):
+    for attempt in range(4):
+        try:
+            os.killpg(pid, sig)
+            return
+        except ProcessLookupError:
+            return
+        except PermissionError:
+            # macOS can briefly return EPERM while a just-terminated orphan group
+            # is being reaped. Retry that transition, but never hide persistent EPERM.
+            if sys.platform != 'darwin' or attempt == 3:
+                raise
+            time.sleep(.01)
+
+
 def terminate(process, job=None):
     if job is not None:
         job.close()  # Also kills descendants after their original parent has exited.
         process.wait()
         return
-    try:
-        os.killpg(process.pid, signal.SIGTERM)
-    except ProcessLookupError:
-        return
+    signal_group(process.pid, signal.SIGTERM)
     try:
         process.wait(timeout=.3)
     except subprocess.TimeoutExpired:
         pass
-    try:
-        os.killpg(process.pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
+    signal_group(process.pid, signal.SIGKILL)
     process.wait()

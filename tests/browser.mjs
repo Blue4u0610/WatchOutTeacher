@@ -125,7 +125,7 @@ try {
    const q=model.border;return {x:q[0],y:q[1],width:q[2]-q[0],height:q[7]-q[1]};
  }
  async function toggleDetails(){const b=await shadowBox('expand');await page.mouse.click(b.x+b.width/2,b.y+b.height/2);}
- async function dismiss(){await page.mouse.click(5,5);await waitFor(async()=>await page.locator('course-assist-card').count()===0);}
+ async function dismiss(){await page.locator('h1').click();await waitFor(async()=>await page.locator('course-assist-card').count()===0);}
  async function chromeSetting(gesture){await opts.evaluate(async gesture=>chrome.storage.local.set({gesture}),gesture);await page.waitForTimeout(100);}
  async function select(selector,alt=true,releaseEarly=false,target=page) {
    const loc=target.locator(selector);await loc.scrollIntoViewIfNeeded();
@@ -179,7 +179,9 @@ try {
    await page.mouse.wheel(0,200);await page.waitForTimeout(150);assert.equal(await page.locator('course-assist-card').count(),1);
    const scrolled=await page.locator('course-assist-card').boundingBox();assert(scrolled.y>=0&&scrolled.y+scrolled.height<=900);pass('scroll after answer preserves visible overlay');
    await page.mouse.click(10,400,{button:'right'});await page.keyboard.press('Escape');assert.equal(await page.locator('course-assist-card').count(),1);
-   await page.mouse.click(10,400,{button:'middle'});assert.equal(await page.locator('course-assist-card').count(),1);pass('outside right and middle clicks preserve answer');
+   await page.mouse.click(10,400,{button:'middle'});assert.equal(await page.locator('course-assist-card').count(),1);
+   // Windows middle-click starts browser autoscroll; Escape ends that native mode.
+   await page.keyboard.press('Escape');assert.equal(await page.locator('course-assist-card').count(),1);pass('outside right and middle clicks preserve answer');
    await page.setViewportSize({width:900,height:700});await page.waitForTimeout(150);assert.equal(await page.locator('course-assist-card').count(),1);await page.setViewportSize({width:1100,height:900});pass('resize keeps answer');
    await dismiss();
    await select('#edge');await waitFor(async()=> (await cardText()).includes('B — 4'));const edge=await page.locator('course-assist-card').boundingBox();assert(edge.x>=0&&edge.y>=0&&edge.x+edge.width<=1100&&edge.y+edge.height<=900);pass('viewport-edge positioning');await dismiss();
@@ -197,7 +199,10 @@ try {
    await chromeSetting('alt-shift');await select('#q1');await page.waitForTimeout(200);assert.equal(await page.locator('course-assist-card').count(),0);
    await page.keyboard.down('Shift');await select('#q1');await page.keyboard.up('Shift');await waitFor(async()=>(await cardText()).includes('B — 4'));pass('configurable Alt/Option + Shift gesture');await dismiss();await chromeSetting('alt');
    await select('#q1');await rpc('course_create',{name:'Empty course'});await page.waitForTimeout(900);assert.equal(await page.locator('course-assist-card').count(),0);pass('course change cancels pending answer and closes overlay');
-   await select('#q1');await page.waitForTimeout(80);const pid=Number(await fs.readFile(path.join(profile,'host.pid'),'utf8'));process.kill(pid,'SIGKILL');await waitFor(async()=>(await cardText()).includes('本地桥接已断开'));pass('native host disconnect shows an actionable error');await dismiss();assert((await rpc('state')).ok);pass('native reconnect succeeds');
+   await page.locator('#q1').evaluate(e=>e.append(' WAIT_FOR_DISCONNECT'));
+   await select('#q1');
+   await waitFor(()=>fs.access(path.join(profile,'ask.pending')).then(()=>true,()=>false));
+   const pid=Number(await fs.readFile(path.join(profile,'host.pid'),'utf8'));process.kill(pid,'SIGKILL');await waitFor(async()=>(await cardText()).includes('本地桥接已断开'));pass('native host disconnect shows an actionable error');await dismiss();assert((await rpc('state')).ok);pass('native reconnect succeeds');
    await page.reload();await select('#q1');await page.waitForTimeout(80);await page.reload();await page.waitForTimeout(900);assert.equal(await page.locator('course-assist-card').count(),0);pass('reload disconnects old request');
  }
  const finalDiag=(await rpc('diagnostics')).data;

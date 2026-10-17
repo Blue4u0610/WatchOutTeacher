@@ -12,7 +12,11 @@ class Fake:
     def models(self,cancel=None):return {'models':[{'id':'test-model','name':'Test Model','efforts':['low','medium','high'],'default_effort':'medium'}],'message':'TEST MOCK catalog'}
     def answer(self,prompt,model,cancel,timeout,effort=''):
         data=json.loads(prompt.split('\nDATA:\n')[1]); q=data['selected_text']
-        cancel.wait(.7 if '2 + 2' in q else .25)
+        if 'WAIT_FOR_DISCONNECT' in q:
+            Path(os.environ['COURSE_ASSIST_DATA']).parent.joinpath('ask.pending').write_text('ready')
+            cancel.wait(30)
+        else:
+            cancel.wait(.7 if '2 + 2' in q else .25)
         if cancel.is_set(): raise AppError('cancelled','cancelled')
         sources=data['excerpts']
         answer='B — Violet' if 'Lumen' in q else 'B — 4'
