@@ -1,0 +1,16 @@
+{
+  "test": "real Codex gpt-6-astra with explicit high effort",
+  "answer": "B. 4",
+  "diagnostics": {
+    "provider": "codex",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "fallback_reason": null,
+    "retrieval": {
+      "selected": 0,
+      "total": 0,
+      "reason": "未选择课程"
+    },
+    "elapsed_ms": 5382
+  }
+}

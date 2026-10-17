@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "WatchOutTeacher",
+  "version": "0.1.5",
+  "description": "Option 划词，结合本地课程资料获取简短答案与英文解释。",
+  "permissions": [
+    "nativeMessaging",
+    "storage",
+    "scripting"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "WatchOutTeacher · 设置",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7KiH5ngJBSOvyY4uzCUvAci9JApOfZzbI4dhL/dkCMYQzbd2XrzuvNIN4U0ZV8pMgsG7VyJ2xz2giWPgCywnQ3vHVYSikh2U1qmw63SlYrn/8KHsroFunRn8dPmBMLz+/gwZtlqFDXAnqlaC7yYWEwfwgdxhB6tZb/EkM8eHREAy+0c/lcdGYrWJ+zF/iyl5H532ITXMxdyI7xZn4NN5P8Lxmgu69jWm8xgZ6L2la4XctOkEyGYoTJ9MsVVe+TOREMBhTLRpRmd4ONsZktL0ZT9xSXq0V3nBHAeXSXetwenXkRBZCp/26JitEXoeGttfmm6fFTTgz6SZhLKYjjr2QQIDAQAB",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

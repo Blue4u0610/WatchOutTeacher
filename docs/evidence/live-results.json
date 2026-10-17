@@ -1,0 +1,36 @@
+{
+  "mode": "LIVE CODEX",
+  "date": "2026-10-17T10:12:41.709Z",
+  "browser": "141.0.7390.37",
+  "passed": [
+    "real extension → Native Messaging → isolated host connection",
+    "site settings + dynamic injection (fixture origins pre-granted for headless test)",
+    "settings UI course creation + chunked document import",
+    "normal selection sends no request",
+    "editable region excluded",
+    "LIVE CODEX Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup",
+    "click answer expands English explanation",
+    "Esc closes",
+    "LIVE CODEX imported material changes answer; source points to supplied document/chunk",
+    "outside click closes",
+    "no option selected or submitted"
+  ],
+  "diagnostics": [
+    {
+      "id": 2,
+      "time": "2026-10-17 10:12:41",
+      "request": "a3c97d7e-8038-4628-bfa4-ead45df6f9d2",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 4, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 4643}"
+    },
+    {
+      "id": 1,
+      "time": "2026-10-17 10:12:36",
+      "request": "6d475a7d-057a-4c70-b6cf-12c7a1c4a427",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 2, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 5349}"
+    }
+  ]
+}

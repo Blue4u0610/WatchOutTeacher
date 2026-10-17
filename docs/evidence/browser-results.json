@@ -1,0 +1,132 @@
+{
+  "mode": "MOCK PROVIDER",
+  "date": "2026-10-17T11:31:18.706Z",
+  "browser": "141.0.7390.37",
+  "passed": [
+    "real extension → Native Messaging → isolated host connection",
+    "CLI catalog dropdown persists selected model across reload",
+    "model-supported effort choices persist across reload",
+    "model switch blocks unsupported effort without silently changing it",
+    "custom model retained across reload and catalog refresh",
+    "site settings + dynamic injection (fixture origins pre-granted for headless test)",
+    "settings UI course creation + chunked document import",
+    "normal selection sends no request",
+    "editable region excluded",
+    "saved effort reaches answer provider and diagnostics",
+    "MOCK Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup",
+    "answer click does not expand; native drag selects answer text for copying",
+    "Esc preserves answer",
+    "bottom-right chevron expands English explanation",
+    "chevron collapses without dismissing answer",
+    "MOCK imported material changes answer; source points to supplied document/chunk",
+    "outside left click clearing selection closes",
+    "no option selected or submitted",
+    "rapid replacement never shows old result",
+    "late result after cancellation never reopens",
+    "SPA route change cancels and suppresses late result",
+    "scroll during loading preserves request and answer",
+    "scroll after answer preserves visible overlay",
+    "outside right and middle clicks preserve answer",
+    "resize keeps answer",
+    "viewport-edge positioning",
+    "125% page CSS zoom and dark system theme",
+    "frame-local overlay: localhost",
+    "frame-local overlay: 127.0.0.1",
+    "oversized multiline selection is rejected without calling provider",
+    "configurable Option + Shift gesture",
+    "course change cancels pending answer and closes overlay",
+    "native host disconnect shows an actionable error",
+    "native reconnect succeeds",
+    "reload disconnects old request"
+  ],
+  "diagnostics": [
+    {
+      "id": 11,
+      "time": "2026-10-17 11:31:17",
+      "request": "1bf03450-6849-4a2a-b2ad-9ba96a743aed",
+      "provider": null,
+      "code": "cancelled",
+      "details": "{\"elapsed_ms\": 106}"
+    },
+    {
+      "id": 10,
+      "time": "2026-10-17 11:31:15",
+      "request": "cfe790cc-1b65-43d7-96b1-0617f94d09a5",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 705}"
+    },
+    {
+      "id": 9,
+      "time": "2026-10-17 11:31:12",
+      "request": "af71c216-a2d0-4e48-9658-9133cc8bdf2d",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
+    },
+    {
+      "id": 8,
+      "time": "2026-10-17 11:31:11",
+      "request": "849a57f7-af39-4192-875e-7eaa8cbe44a9",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+    },
+    {
+      "id": 7,
+      "time": "2026-10-17 11:31:10",
+      "request": "9febe093-5ec7-48fb-9a17-f1b4b729614e",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 706}"
+    },
+    {
+      "id": 6,
+      "time": "2026-10-17 11:31:09",
+      "request": "d341503b-b1a6-4f79-9e41-748c695a53a6",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
+    },
+    {
+      "id": 5,
+      "time": "2026-10-17 11:31:08",
+      "request": "40bcc93e-5ebd-49e9-b4a5-51296c70d0ae",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 707}"
+    },
+    {
+      "id": 4,
+      "time": "2026-10-17 11:31:04",
+      "request": "02663cc4-27ae-42af-9595-2eeff3476772",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 255}"
+    },
+    {
+      "id": 3,
+      "time": "2026-10-17 11:31:03",
+      "request": "34375112-e0d5-49cf-b6c2-53c4f7b0ab29",
+      "provider": null,
+      "code": "cancelled",
+      "details": "{\"elapsed_ms\": 27}"
+    },
+    {
+      "id": 2,
+      "time": "2026-10-17 11:31:02",
+      "request": "92314d07-c451-4804-8d0f-46be564a106c",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+    },
+    {
+      "id": 1,
+      "time": "2026-10-17 11:31:01",
+      "request": "ad9e9886-6cf4-4c89-95aa-4d21bdea0b01",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 709}"
+    }
+  ]
+}
