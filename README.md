@@ -11,6 +11,7 @@
 WatchOutTeacher 是一个运行在 **Windows / macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI** 或 **Claude Code** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
 
 Star my repo pls, this is important./点个star吧 这很重要
+
 Email:bluelan0610@outlook.com
 
 [安装](#安装从零开始) · [使用](#日常使用) · [资料与隐私](#资料怎么用数据去哪儿) · [排障](#遇到问题) · [开发](#开发与测试)
