@@ -202,7 +202,7 @@ Codex CLI / Claude Code → 对应 AI 服务
 
 ## 更新与卸载
 
-**Git 安装：**先关闭题目页和设置页，在扩展管理页禁用 WatchOutTeacher，然后在项目目录运行：
+**Git 安装：** 先关闭题目页和设置页，在扩展管理页禁用 WatchOutTeacher，然后在项目目录运行：
 
 ```sh
 git pull --ff-only
