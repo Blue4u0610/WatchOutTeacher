@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import json
 import re
 import sqlite3
@@ -26,11 +27,16 @@ class Store:
             ''')
         self.path.chmod(0o600)
 
+    @contextmanager
     def db(self):
         db=sqlite3.connect(str(self.path),timeout=10)
         db.row_factory=sqlite3.Row
         db.execute('PRAGMA foreign_keys=ON')
-        return db
+        try:
+            with db:
+                yield db
+        finally:
+            db.close()
 
     def settings(self):
         with self.db() as db: return {**DEFAULTS,**{r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM settings')}}

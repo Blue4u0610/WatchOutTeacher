@@ -10,8 +10,14 @@ permissions:
 
 jobs:
   test:
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    env:
+      PYTHONUTF8: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,9 +29,17 @@ jobs:
           cache: npm
       - name: Install Python dependencies
         run: |
-          python3 -m venv .venv
-          .venv/bin/python -m pip install -r requirements.txt
+          python -m venv .venv
+          node scripts/python.mjs -m pip install -r requirements.txt
       - run: npm ci
       - run: npx playwright install chromium
+      - name: Installer lifecycle
+        run: node scripts/python.mjs tests/install_smoke.py
       - run: npm test
       - run: npm run test:browser
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-${{ matrix.os }}
+          path: test-results/

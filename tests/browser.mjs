@@ -12,7 +12,6 @@ const profile=await fs.mkdtemp(path.join(os.tmpdir(),'course-browser-'));
 const resultDir=path.join(root,'test-results'); await fs.mkdir(resultDir,{recursive:true});
 const manifest=JSON.parse(await fs.readFile(path.join(root,'extension/manifest.json'),'utf8'));
 const eid=[...crypto.createHash('sha256').update(Buffer.from(manifest.key,'base64')).digest('hex').slice(0,32)].map(x=>String.fromCharCode(97+parseInt(x,16))).join('');
-const quote=s=>`'${s.replaceAll("'","'\\''")}'`;
 const runtime=path.join(profile,'runtime');
 await fs.cp(path.join(root,'bridge'),path.join(runtime,'bridge'),{recursive:true});
 await fs.mkdir(path.join(runtime,'extension'));await fs.copyFile(path.join(root,'extension/manifest.json'),path.join(runtime,'extension/manifest.json'));
@@ -22,15 +21,18 @@ await fs.cp(path.join(root,'extension'),testExtension,{recursive:true});
 // Headless Chromium cannot accept native optional-permission prompts. Only fixture origins
 // are pre-granted in this disposable test copy; shipped manifest has zero host permissions.
 await fs.writeFile(path.join(testExtension,'manifest.json'),JSON.stringify({...manifest,host_permissions:['http://localhost/*','http://127.0.0.1/*']}));
-// A Documents checkout may be blocked by macOS privacy controls when Chrome starts Python.
+const win=process.platform==='win32';
+// Use a unique test host name: Windows registration is per-user, not per-profile.
+const hostName='com.courseassist.test.h'+crypto.randomBytes(8).toString('hex');
+const background=path.join(testExtension,'background.js');
+await fs.writeFile(background,(await fs.readFile(background,'utf8')).replaceAll('com.courseassist.bridge',hostName));
 const installedPython=path.join(os.homedir(),'Library/Application Support/CourseAssist/runtime/.venv/bin/python');
-const hasInstalledPython=await fs.access(installedPython).then(()=>true,()=>false);
-const python=process.env.COURSE_ASSIST_TEST_PYTHON || (hasInstalledPython ? installedPython : path.join(root,'.venv/bin/python'));
-execFileSync(python,[path.join(root,'tests/make_fixtures.py'),resultDir]);
-const launcher=path.join(profile,'bridge.sh');
-await fs.writeFile(launcher,`#!/bin/sh\nexport COURSE_ASSIST_DATA=${quote(path.join(profile,'data'))}\nexec ${quote(python)} ${quote(path.join(runtime,live?'bridge/host.py':'tests/mock_host.py'))} "$@"\n`,{mode:0o700});
-await fs.mkdir(path.join(profile,'NativeMessagingHosts'));
-await fs.writeFile(path.join(profile,'NativeMessagingHosts/com.courseassist.bridge.json'),JSON.stringify({name:'com.courseassist.bridge',description:'Isolated WatchOutTeacher test',path:launcher,type:'stdio',allowed_origins:[`chrome-extension://${eid}/`]}));
+const hasInstalledPython=!win && await fs.access(installedPython).then(()=>true,()=>false);
+const python=process.env.COURSE_ASSIST_TEST_PYTHON || (hasInstalledPython ? installedPython : path.join(root,'.venv',win?'Scripts/python.exe':'bin/python'));
+execFileSync(python,[path.join(root,'tests/make_fixtures.py'),resultDir],{env:{...process.env,PYTHONUTF8:'1'}});
+const hostManifest=path.join(profile,'NativeMessagingHosts',hostName+'.json');
+const setupScript=path.join(root,'tests/native_fixture.py');
+execFileSync(python,[setupScript,'install',profile,hostName,eid,live?'live':'mock'],{env:{...process.env,PYTHONUTF8:'1'}});
 const server=http.createServer(async(req,res)=>{try{const file=path.basename(new URL(req.url,'http://localhost').pathname)||'fixture.html';if(!['fixture.html','frame.html'].includes(file))throw Error();res.setHeader('Content-Type','text/html; charset=utf-8');res.end(await fs.readFile(path.join(root,'tests',file)));}catch{res.writeHead(404).end();}});
 await new Promise(resolve=>server.listen(8765,resolve));
 const results=[];
@@ -44,6 +46,8 @@ try {
  await opts.goto(`chrome-extension://${eid}/options.html`);
  await waitFor(async()=> (await opts.locator('#status').textContent()).includes('已连接'));
  pass('real extension → Native Messaging → isolated host connection');
+ assert.equal(await opts.locator('#gesture option[value=alt]').textContent(),process.platform==='darwin'?'Option ⌥':'Alt');
+ pass('platform-specific modifier labels');
  const rpc=(op,payload={})=>opts.evaluate(async ({op,payload})=>await chrome.runtime.sendMessage({op,payload}),{op,payload});
  if(!live){
    await waitFor(async()=> !(await opts.locator('#refresh-models').isDisabled()));
@@ -144,7 +148,7 @@ try {
  assert(Math.abs(rect.y-qr.y)<150);assert(rect.x>=0 && rect.x+rect.width<=1100);
  const diag=(await rpc('diagnostics')).data; assert.equal(diag.length,before+1);assert.equal(diag[0].code,'ok');
  if(!live){assert.equal(JSON.parse(diag[0].details).requested_effort,'high');pass('saved effort reaches answer provider and diagnostics');}
- pass(`${live?'LIVE CODEX':'MOCK'} Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup`);
+ pass(`${live?'LIVE CODEX':'MOCK'} Alt/Option drag → actual native host → answer B — 4 near selection; exactly one request; modifier released before mouseup`);
  const ab=await shadowBox('answer');
  await page.mouse.click(ab.x+5,ab.y+ab.height/2);
  assert.equal((await page.locator('course-assist-card').boundingBox()).height,rect.height);
@@ -190,7 +194,7 @@ try {
    await page.evaluate(()=>{const p=document.createElement('p');p.id='long';p.textContent='Long question text. '.repeat(450);p.style.cssText='position:fixed;top:60px;left:40px;width:950px;font:8px/10px monospace;z-index:10;background:white';document.body.append(p);});
    const nBefore=(await rpc('diagnostics')).data.length;await select('#long');await waitFor(async()=>(await cardText()).includes('8,000'));assert.equal((await rpc('diagnostics')).data.length,nBefore);pass('oversized multiline selection is rejected without calling provider');await dismiss();await page.evaluate(()=>document.querySelector('#long').remove());
    await chromeSetting('alt-shift');await select('#q1');await page.waitForTimeout(200);assert.equal(await page.locator('course-assist-card').count(),0);
-   await page.keyboard.down('Shift');await select('#q1');await page.keyboard.up('Shift');await waitFor(async()=>(await cardText()).includes('B — 4'));pass('configurable Option + Shift gesture');await dismiss();await chromeSetting('alt');
+   await page.keyboard.down('Shift');await select('#q1');await page.keyboard.up('Shift');await waitFor(async()=>(await cardText()).includes('B — 4'));pass('configurable Alt/Option + Shift gesture');await dismiss();await chromeSetting('alt');
    await select('#q1');await rpc('course_create',{name:'Empty course'});await page.waitForTimeout(900);assert.equal(await page.locator('course-assist-card').count(),0);pass('course change cancels pending answer and closes overlay');
    await select('#q1');await page.waitForTimeout(80);const pid=Number(await fs.readFile(path.join(profile,'host.pid'),'utf8'));process.kill(pid,'SIGKILL');await waitFor(async()=>(await cardText()).includes('本地桥接已断开'));pass('native host disconnect shows an actionable error');await dismiss();assert((await rpc('state')).ok);pass('native reconnect succeeds');
    await page.reload();await select('#q1');await page.waitForTimeout(80);await page.reload();await page.waitForTimeout(900);assert.equal(await page.locator('course-assist-card').count(),0);pass('reload disconnects old request');
@@ -199,4 +203,9 @@ try {
  await fs.writeFile(path.join(resultDir,live?'live-results.json':'browser-results.json'),JSON.stringify({mode:live?'LIVE CODEX':'MOCK PROVIDER',date:new Date().toISOString(),browser:context.browser()?.version(),passed:results,diagnostics:finalDiag},null,2));
  console.log(`Completed ${results.length} checks (${live?'LIVE':'MOCK'}).`);
 } catch(e){if(context){for(const p of context.pages().slice(-1))await p.screenshot({path:path.join(resultDir,'failure.png')}).catch(()=>{});}throw e;}
-finally{if(context)await context.close();server.close();await fs.rm(profile,{recursive:true,force:true});}
+finally{
+ if(context)await context.close();
+ server.close();
+ execFileSync(python,[setupScript,'uninstall',profile,hostName,eid,live?'live':'mock']);
+ await fs.rm(profile,{recursive:true,force:true,maxRetries:10,retryDelay:200});
+}

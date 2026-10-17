@@ -55,10 +55,12 @@ def parse(path, suffix):
 
 if __name__=='__main__':
     try:
-        import resource
-        resource.setrlimit(resource.RLIMIT_CPU,(35,35))
-        if sys.platform != 'darwin':
-            resource.setrlimit(resource.RLIMIT_AS,(1536*1024*1024,1536*1024*1024))
+        # Windows limits are applied by the parent's Job Object before this process runs.
+        if sys.platform != 'win32':
+            import resource
+            resource.setrlimit(resource.RLIMIT_CPU,(35,35))
+            if sys.platform != 'darwin':
+                resource.setrlimit(resource.RLIMIT_AS,(1536*1024*1024,1536*1024*1024))
         result=parse(sys.argv[1],sys.argv[2])
         print(json.dumps({'ok':True,'data':result},ensure_ascii=False))
     except AppError as e: print(json.dumps({'ok':False,'error':{'code':e.code,'message':e.message}}))

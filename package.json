@@ -1,14 +1,14 @@
 {
   "name": "watchoutteacher",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": ".venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v",
+    "test": "node scripts/python.mjs -m unittest discover -s tests -p test_*.py -v",
     "test:browser": "node tests/browser.mjs",
     "test:live": "node tests/browser.mjs --live",
-    "install:bridge": "python3 scripts/install.py",
-    "uninstall:bridge": "python3 scripts/install.py --uninstall"
+    "install:bridge": "node scripts/python.mjs scripts/install.py",
+    "uninstall:bridge": "node scripts/python.mjs scripts/install.py --uninstall"
   },
   "devDependencies": {
     "playwright": "1.56.1"

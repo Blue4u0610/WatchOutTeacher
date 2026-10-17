@@ -1,5 +1,13 @@
 const $ = id => document.getElementById(id);
 let state, deleting;
+let modifierLabel='Alt / Option';
+async function platformLabels() {
+  const {os}=await chrome.runtime.getPlatformInfo();
+  modifierLabel=os==='mac' ? 'Option ⌥' : 'Alt';
+  document.querySelectorAll('[data-modifier]').forEach(el=>{el.textContent=modifierLabel;});
+  $('gesture').options[0].textContent=modifierLabel;
+  $('gesture').options[1].textContent=modifierLabel+' + Shift';
+}
 const catalogs = {codex:[],claude:[]};
 const effortLabels={none:'无额外推理（none）',minimal:'最低（minimal）',low:'低（low）',medium:'中等（medium）',high:'高（high）',xhigh:'很高（xhigh）',max:'最高（max）'};
 function effortPicker(value=$('codex-effort').value) {
@@ -112,7 +120,7 @@ $('site-form').onsubmit=e=>{
   const request=chrome.permissions.request({origins:[origin]});
   act(async()=>{
     if(!await request) throw new Error('网站授权未授予。');
-    await rpc('origins_sync'); await sites(); status('网站已授权，请刷新题目页后按住 ⌥ 拖选文字。');
+    await rpc('origins_sync'); await sites(); status(`网站已授权，请刷新题目页后按住 ${modifierLabel} 拖选文字。`);
   });
 };
 $('all-sites').onclick=()=>{
@@ -121,7 +129,7 @@ $('all-sites').onclick=()=>{
   act(async()=>{
     if(!await request) throw new Error('全部网站授权未授予；已有网站授权保持有效。');
     await rpc('origins_sync'); await sites();
-    status('已授权所有 HTTP / HTTPS 网站。请刷新要使用的网页，再按住 ⌥ 拖选；可在下方撤销授权。');
+    status(`已授权所有 HTTP / HTTPS 网站。请刷新要使用的网页，再按住 ${modifierLabel} 拖选；可在下方撤销授权。`);
   });
 };
 $('course-form').onsubmit=e=>{e.preventDefault(); act(async()=>{render(await rpc('course_create',{name:$('course-name').value})); $('course-name').value=''; status('课程已创建并设为当前课程。');});};
@@ -178,4 +186,4 @@ $('refresh-models').onclick=()=>void refreshModels();
 $('refresh').onclick=()=>act(refresh);
 $('diagnostics').onclick=()=>act(async()=>{ $('diagnostic-output').hidden=false; $('diagnostic-output').textContent=JSON.stringify(await rpc('diagnostics'),null,2); });
 $('extension-id').textContent=`扩展 ID：${chrome.runtime.id}`;
-act(async()=>{await sites();await refresh();});
+act(async()=>{await platformLabels();await sites();await refresh();});

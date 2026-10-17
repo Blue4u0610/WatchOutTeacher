@@ -1,8 +1,14 @@
 import os
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = Path(os.environ.get('COURSE_ASSIST_DATA', str(Path.home() / 'Library/Application Support/CourseAssist')))
+def data_directory():
+    if sys.platform == 'win32':
+        return Path(os.environ.get('LOCALAPPDATA', str(Path.home()/'AppData/Local'))) / 'WatchOutTeacher'
+    return Path.home() / 'Library/Application Support/CourseAssist'
+
+DATA = Path(os.environ.get('COURSE_ASSIST_DATA', str(data_directory())))
 MAX_FILE = 30 * 1024 * 1024
 
 class AppError(Exception):

@@ -154,11 +154,15 @@ class Host:
         raise AppError('unsupported','不支持的上传操作。')
 
 def extension_origin():
-    manifest=json.loads((ROOT/'extension/manifest.json').read_text())
+    manifest=json.loads((ROOT/'extension/manifest.json').read_text(encoding='utf-8'))
     digest=hashlib.sha256(base64.b64decode(manifest['key'])).hexdigest()[:32]
     return 'chrome-extension://'+''.join(chr(ord('a')+int(c,16)) for c in digest)+'/'
 
 def main():
+    if sys.platform == 'win32':
+        import msvcrt
+        msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+        msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
     os.umask(0o077)
     if len(sys.argv)<2 or sys.argv[1].rstrip('/')+'/' != extension_origin():
         print('WatchOutTeacher: unauthorized native origin',file=sys.stderr); return 1
