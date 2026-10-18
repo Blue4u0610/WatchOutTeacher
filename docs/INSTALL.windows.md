@@ -57,7 +57,7 @@ agy --version
 agy
 ```
 
-本版本支持 **Antigravity CLI 1.4.2**。如果安装器提供了更新版本，请从[官方 1.4.2 发布页](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.4.2)下载对应 Windows / macOS 压缩包；未经验证的版本会被拒绝。完成 Google 登录，阅读条款并自行选择数据使用偏好。本插件不再调用旧版 `gemini` 命令。
+本版本支持 **Antigravity CLI 1.4.2**。如果安装器提供了更新版本，请从[官方 1.4.2 发布页](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.4.2)下载对应 Windows / macOS 压缩包；未经验证的版本会被拒绝。 压缩包内的文件名为 `antigravity.exe`，需重命名为 `agy.exe` 并放入 `%LOCALAPPDATA%\agy\bin\`。完成 Google 登录，阅读条款并自行选择数据使用偏好。本插件不再调用旧版 `gemini` 命令。
 
 重新加载插件，选择 **Gemini**，刷新模型列表后保存。列表来自当前账户；可用时，High / Medium / Low 强度直接包含在模型选项中。自动模式选择账户列表中的第一个 Gemini 模型。升级不会自动启用 Gemini 备用。
 

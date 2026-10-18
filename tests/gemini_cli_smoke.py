@@ -25,12 +25,12 @@ with tempfile.TemporaryDirectory(prefix='watchoutteacher-cli-check-') as d:
         executable=Path(d)/('agy.exe' if system=='windows' else 'agy')
         if suffix=='zip':
             with zipfile.ZipFile(io.BytesIO(data)) as archive:
-                names=[n for n in archive.namelist() if Path(n).name=='agy.exe']
+                names=[n for n in archive.namelist() if Path(n).name=='antigravity.exe']
                 assert len(names)==1,names
                 executable.write_bytes(archive.read(names[0]))
         else:
             with tarfile.open(fileobj=io.BytesIO(data),mode='r:gz') as archive:
-                members=[m for m in archive.getmembers() if m.isfile() and Path(m.name).name=='agy']
+                members=[m for m in archive.getmembers() if m.isfile() and Path(m.name).name=='antigravity']
                 assert len(members)==1
                 executable.write_bytes(archive.extractfile(members[0]).read())
         executable.chmod(0o700)

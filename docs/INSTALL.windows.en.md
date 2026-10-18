@@ -57,7 +57,7 @@ agy --version
 agy
 ```
 
-This release supports **Antigravity CLI 1.4.2**. If the installer delivers a newer version, use the matching Windows/macOS archive from the [official 1.4.2 release](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.4.2); unverified versions are rejected. Complete Google sign-in, review the terms and choose your data-use preference. The legacy `gemini` command is not used.
+This release supports **Antigravity CLI 1.4.2**. If the installer delivers a newer version, use the matching Windows/macOS archive from the [official 1.4.2 release](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.4.2); unverified versions are rejected. The archive contains `antigravity.exe`: rename it to `agy.exe` and place it in `%LOCALAPPDATA%\agy\bin\`. Complete Google sign-in, review the terms and choose your data-use preference. The legacy `gemini` command is not used.
 
 Reload the extension, select **Gemini**, refresh the model list and save. The list comes from your account; effort variants such as High / Medium / Low are included in the model choice when available. Auto chooses the first Gemini model returned by the account catalog. No fallback is enabled for Gemini automatically.
 
