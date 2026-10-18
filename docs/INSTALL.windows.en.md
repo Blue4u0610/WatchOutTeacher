@@ -63,7 +63,7 @@ If `py` is unavailable but `python --version` identifies the Python you just ins
 
 For a tested release, download `WatchOutTeacher-vVERSION.zip` from **Assets** on the [latest release](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) page. The repository’s **Code → Download ZIP** button and a default Git clone track ongoing development on `main`.
 
-Choose **Code → Download ZIP** on the repository page. Right-click the ZIP, choose **Extract All**, and keep the extracted project somewhere permanent, such as `C:\Users\YourName\Projects\WatchOutTeacher`. Do not work inside the ZIP preview.
+Right-click the downloaded release ZIP, choose **Extract All**, and keep the extracted project somewhere permanent, such as `C:\Users\YourName\Projects\WatchOutTeacher`. Do not work inside the ZIP preview.
 
 Right-click inside the extracted project folder and choose **Open in Terminal**. Confirm that the directory contains `README.md`, `scripts` and `extension`. Or navigate from PowerShell:
 
