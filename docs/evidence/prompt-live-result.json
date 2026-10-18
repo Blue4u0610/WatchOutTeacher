@@ -1,0 +1,23 @@
+{
+  "answer": "无法确定 Zircon 级项目的确切数值配额。请提供 Cerulean-73 协议的定义或配额表。",
+  "explanation_en": "当前摘录仅涉及备份和定期复习笔记，不能支持此题。该协议为虚构协议，且题目未给出定义，无法依据通用知识推断配额。",
+  "sources": [],
+  "basis": "insufficient",
+  "needs_more_context": true,
+  "diagnostics": {
+    "provider": "codex",
+    "requested_model": "auto",
+    "requested_effort": "low",
+    "fallback_reason": null,
+    "retrieval": {
+      "selected": 1,
+      "total": 1,
+      "reason": "fts5_bm25",
+      "query_terms": 22,
+      "query_terms_total": 22,
+      "query_terms_truncated": false
+    },
+    "elapsed_ms": 6869
+  },
+  "warnings": []
+}

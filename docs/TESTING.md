@@ -1,6 +1,6 @@
 # Testing
 
-Version **0.2.0** adds native Windows support. The suite contains **35 Python tests** (two Windows-only tests are skipped on macOS), **36 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
+Version **0.2.1** includes native Windows support and configurable answer instructions. The suite contains **37 Python tests** (two Windows-only tests are skipped on macOS), **38 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ The browser runner creates a temporary profile, a unique Native Messaging host n
 | Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
 | Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation and index deletion |
 | Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments |
-| Settings | Persistent model/effort choices, catalog filtering and unsupported combinations |
+| Settings | Persistent model/effort choices, answer instructions/default reset, catalog filtering and unsupported combinations |
 | Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
 | Lifecycle | Scroll/resize retention, stale-result suppression, navigation, course changes, disconnect/reconnect and reload |
 | Layout | Viewport edges, light/dark themes, CSS zoom, same-origin and cross-origin frames |
@@ -53,6 +53,10 @@ Earlier integration runs used Codex CLI **0.153.4**, signed in with ChatGPT, on 
 [Historical live browser record](evidence/live-results.json) · [Explicit-effort record](evidence/effort-live-result.json)
 
 To run the current live suite, sign in to Codex and run `npm run test:live`. It makes real requests and uses the account's allowance. Historical screenshots may show an older interface.
+
+## Answer-instruction smoke check
+
+A real Codex call on macOS used the 0.2.1 default instructions, an unrelated handout and a question about an undefined fictional protocol. It returned `basis: insufficient`, requested the missing definition and supplied no citations. This checks one controlled case, not a general hallucination guarantee. [Recorded result](evidence/prompt-live-result.json).
 
 ## Manual checks still needed
 

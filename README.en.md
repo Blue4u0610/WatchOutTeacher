@@ -109,6 +109,12 @@ Select the model and effort **in this extension's settings**. Save to apply them
 
 Higher effort usually takes longer and uses more resources; it does not guarantee a better answer. Ultra includes automatic task delegation and is not offered here. Claude keeps its own default effort. Refresh the model list in settings instead of relying on a model list frozen in a README.
 
+### Answer instructions
+
+In settings, open **回答要求** (“Answer instructions”) under **模型和操作**. Edit the text and save. The same instructions apply to future questions in all courses and to both providers. You can set language, length and how the answer should use course material; the limit is 2,000 characters. **恢复默认回答要求** fills the default text; save to apply it. Saving an empty field also restores the default.
+
+The default asks the model to prefer relevant PPT/PDF material, paraphrase instead of copying passages, cite only supporting sources, and clearly say when the retrieved excerpts are insufficient. Reliable general knowledge must be labelled separately; uncertain answers should ask for the missing information. These instructions travel with each question and are stored locally, not in diagnostic logs. They guide the model but do not guarantee factual accuracy; references still need checking.
+
 ## Documents and privacy
 
 ```text

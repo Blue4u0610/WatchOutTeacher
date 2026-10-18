@@ -91,6 +91,8 @@ async function refresh() {
   render(await rpc('state'));
   $('primary').value=state.settings.primary; $('fallback').checked=state.settings.fallback;
   $('timeout').value=state.settings.timeout;
+  $('answer-instructions').value=state.settings.answer_instructions || '';
+  $('reset-instructions').disabled=!state.defaults?.answer_instructions;
   for(const provider of ['codex','claude']) modelPicker(provider,state.settings[provider+'_model']);
   effortPicker(state.settings.codex_effort || '');
   const p=await chrome.storage.local.get(['gesture','theme']); $('gesture').value=p.gesture || 'alt'; $('theme').value=p.theme || 'auto';
@@ -141,8 +143,12 @@ $('rename').onclick=()=>{
 $('delete-course').onclick=()=>{deleting=state.settings.active_course; $('confirm-delete').hidden=false;};
 $('keep-course').onclick=()=>{$('confirm-delete').hidden=true;};
 $('confirm-delete-course').onclick=()=>act(async()=>{render(await rpc('course_delete',{id:deleting})); $('confirm-delete').hidden=true; status('课程及资料索引已删除。');});
+$('reset-instructions').onclick=()=>{
+  $('answer-instructions').value=state.defaults.answer_instructions;
+  status('已填入默认回答要求，点击“保存设置”后生效。');
+};
 $('settings-form').onsubmit=e=>{e.preventDefault();act(async()=>{
-  await rpc('settings',{primary:$('primary').value,fallback:$('fallback').checked,timeout:Number($('timeout').value),codex_model:modelValue('codex'),claude_model:modelValue('claude'),codex_effort:$('codex-effort').value});
+  await rpc('settings',{primary:$('primary').value,fallback:$('fallback').checked,timeout:Number($('timeout').value),answer_instructions:$('answer-instructions').value,codex_model:modelValue('codex'),claude_model:modelValue('claude'),codex_effort:$('codex-effort').value});
   await chrome.storage.local.set({gesture:$('gesture').value,theme:$('theme').value}); status('设置已保存。');
 });};
 $('files').onchange=()=>act(async()=>{

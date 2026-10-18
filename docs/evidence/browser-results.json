@@ -1,10 +1,12 @@
 {
   "mode": "MOCK PROVIDER",
-  "date": "2026-10-17T12:20:23.137Z",
+  "date": "2026-10-18T03:48:39.605Z",
   "browser": "141.0.7390.37",
   "passed": [
     "real extension → Native Messaging → isolated host connection",
     "platform-specific modifier labels",
+    "custom answer instructions persist across reload",
+    "restore default answer instructions and save",
     "CLI catalog dropdown persists selected model across reload",
     "model-supported effort choices persist across reload",
     "model switch blocks unsupported effort without silently changing it",
@@ -42,92 +44,100 @@
   ],
   "diagnostics": [
     {
-      "id": 11,
-      "time": "2026-10-17 12:20:22",
-      "request": "291575eb-20a0-4fdc-9503-61023574ff2a",
+      "id": 12,
+      "time": "2026-10-18 03:48:38",
+      "request": "243ce77e-35ae-42ce-b5aa-b70cb7f525b8",
       "provider": null,
       "code": "cancelled",
-      "details": "{\"elapsed_ms\": 110}"
+      "details": "{\"elapsed_ms\": 106}"
+    },
+    {
+      "id": 11,
+      "time": "2026-10-18 03:48:35",
+      "request": "944162f9-557c-45ba-bcdc-ae7df6de48c6",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 705}"
     },
     {
       "id": 10,
-      "time": "2026-10-17 12:20:19",
-      "request": "c5858273-6054-4bd1-b804-95103e251248",
+      "time": "2026-10-18 03:48:33",
+      "request": "48e08e8d-0df7-41da-8595-c6b2ac22c307",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 704}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
     },
     {
       "id": 9,
-      "time": "2026-10-17 12:20:17",
-      "request": "47a24286-c9b0-4f90-aa2e-cca11ca08f60",
+      "time": "2026-10-18 03:48:32",
+      "request": "07b2e414-c204-4af8-ac4e-f17287841ee4",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 256}"
     },
     {
       "id": 8,
-      "time": "2026-10-17 12:20:16",
-      "request": "639aa1d5-c058-4d55-9c56-b27dc7cd6dd0",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 253}"
-    },
-    {
-      "id": 7,
-      "time": "2026-10-17 12:20:15",
-      "request": "f913f8fc-67b6-4fd7-a07b-4481054a2c7a",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 702}"
-    },
-    {
-      "id": 6,
-      "time": "2026-10-17 12:20:13",
-      "request": "ca9ae756-8b86-4766-a0f6-51325a251aed",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
-    },
-    {
-      "id": 5,
-      "time": "2026-10-17 12:20:12",
-      "request": "4dec9529-a1ed-489e-a9d7-a15f4e2bec28",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 702}"
-    },
-    {
-      "id": 4,
-      "time": "2026-10-17 12:20:08",
-      "request": "87f8c473-b080-46c1-83fc-42010027fca9",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
-    },
-    {
-      "id": 3,
-      "time": "2026-10-17 12:20:07",
-      "request": "a2be0862-2f56-4855-afb5-0b392e16c60e",
-      "provider": null,
-      "code": "cancelled",
-      "details": "{\"elapsed_ms\": 31}"
-    },
-    {
-      "id": 2,
-      "time": "2026-10-17 12:20:07",
-      "request": "a592d23b-9df3-41a6-88ef-c5c15029ca58",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 254}"
-    },
-    {
-      "id": 1,
-      "time": "2026-10-17 12:20:06",
-      "request": "93cf94c3-0c78-467b-9a68-3465e9f75e79",
+      "time": "2026-10-18 03:48:31",
+      "request": "37d7c77c-b930-477d-8972-ce340e1cb631",
       "provider": "codex",
       "code": "ok",
       "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
+    },
+    {
+      "id": 7,
+      "time": "2026-10-18 03:48:30",
+      "request": "14fb5346-fcdb-4cc0-9c47-ca38e7e15c9d",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
+    },
+    {
+      "id": 6,
+      "time": "2026-10-18 03:48:29",
+      "request": "d0a40217-8049-4ebc-b628-19819c477800",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
+    },
+    {
+      "id": 5,
+      "time": "2026-10-18 03:48:25",
+      "request": "92534d67-d969-418b-ac5d-d751cb183aea",
+      "provider": null,
+      "code": "cancelled",
+      "details": "{\"elapsed_ms\": 26}"
+    },
+    {
+      "id": 4,
+      "time": "2026-10-18 03:48:24",
+      "request": "5c8f216f-83c0-4819-a975-7802f665934e",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+    },
+    {
+      "id": 3,
+      "time": "2026-10-18 03:48:23",
+      "request": "37bc561d-f805-45f1-809f-52f8bb2f084a",
+      "provider": null,
+      "code": "cancelled",
+      "details": "{\"elapsed_ms\": 29}"
+    },
+    {
+      "id": 2,
+      "time": "2026-10-18 03:48:22",
+      "request": "2ff4c980-75fc-4da6-b01f-29774fcddaff",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 255}"
+    },
+    {
+      "id": 1,
+      "time": "2026-10-18 03:48:21",
+      "request": "0b08cf1a-4775-4df5-b62d-c12db0d622d8",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 1, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 707}"
     }
   ]
 }

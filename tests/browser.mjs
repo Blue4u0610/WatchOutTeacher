@@ -52,6 +52,20 @@ try {
  const rpc=(op,payload={})=>opts.evaluate(async ({op,payload})=>await chrome.runtime.sendMessage({op,payload}),{op,payload});
  if(!live){
    await waitFor(async()=> !(await opts.locator('#refresh-models').isDisabled()));
+   const defaultInstructions=await opts.locator('#answer-instructions').inputValue();
+   assert(defaultInstructions.includes('不要编造'));
+   await opts.locator('#answer-instructions').fill('请用自己的话概括；资料不足时明确说明。');
+   await opts.locator('#settings-form button:not([type="button"])').click();
+   await waitFor(async()=> (await rpc('state')).data.settings.answer_instructions==='请用自己的话概括；资料不足时明确说明。');
+   await opts.reload();
+   await waitFor(async()=> (await opts.locator('#answer-instructions').inputValue())==='请用自己的话概括；资料不足时明确说明。');
+   pass('custom answer instructions persist across reload');
+   await opts.locator('#reset-instructions').click();
+   assert.equal(await opts.locator('#answer-instructions').inputValue(),defaultInstructions);
+   await opts.locator('#settings-form button:not([type="button"])').click();
+   await waitFor(async()=> (await rpc('state')).data.settings.answer_instructions===defaultInstructions);
+   pass('restore default answer instructions and save');
+   await waitFor(async()=> !(await opts.locator('#refresh-models').isDisabled()));
    await opts.locator('#codex-model').selectOption('test-model');
    await opts.locator('#settings-form button:not([type="button"])').click();
    await waitFor(async()=> (await rpc('state')).data.settings.codex_model==='test-model');
