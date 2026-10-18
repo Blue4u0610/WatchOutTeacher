@@ -9,7 +9,7 @@ def data_directory():
     return Path.home() / 'Library/Application Support/CourseAssist'
 
 DATA = Path(os.environ.get('COURSE_ASSIST_DATA', str(data_directory())))
-MAX_FILE = 30 * 1024 * 1024
+MAX_FILE = 100 * 1024 * 1024
 
 class AppError(Exception):
     def __init__(self, code, message):

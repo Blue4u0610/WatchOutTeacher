@@ -1,6 +1,6 @@
 {
   "mode": "MOCK PROVIDER",
-  "date": "2026-10-18T04:00:31.385Z",
+  "date": "2026-10-18T04:10:39.424Z",
   "browser": "141.0.7390.37",
   "passed": [
     "real extension → Native Messaging → isolated host connection",
@@ -17,6 +17,8 @@
     "invalid dropped files report errors while valid files still import",
     "dropping outside import area prevents navigation and import",
     "drop requires a selected course",
+    "large PPTX over 30 MB imports through browser drag and native parser",
+    "batch queue preserves all files, accepts another drop while busy and reports individual failures",
     "normal selection sends no request",
     "editable region excluded",
     "saved effort reaches answer provider and diagnostics",
@@ -49,99 +51,99 @@
   "diagnostics": [
     {
       "id": 12,
-      "time": "2026-10-18 04:00:30",
-      "request": "3ece5865-f6c3-4499-924c-01a8be7c38ca",
+      "time": "2026-10-18 04:10:38",
+      "request": "d6021297-a7b7-417c-a388-05431da3a633",
       "provider": null,
       "code": "cancelled",
-      "details": "{\"elapsed_ms\": 100}"
+      "details": "{\"elapsed_ms\": 106}"
     },
     {
       "id": 11,
-      "time": "2026-10-18 04:00:27",
-      "request": "1f4e4423-87c3-4b2b-9ece-59e9c5a4e5db",
+      "time": "2026-10-18 04:10:35",
+      "request": "fec6d475-0966-4569-aa19-b2bca3f1bf9b",
       "provider": "codex",
       "code": "ok",
       "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
     },
     {
       "id": 10,
-      "time": "2026-10-18 04:00:25",
-      "request": "0b240af4-5752-446c-8e14-eb0f9e9dc009",
+      "time": "2026-10-18 04:10:33",
+      "request": "f776da8e-c75c-463b-ada2-9e511e7e0307",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 256}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
     },
     {
       "id": 9,
-      "time": "2026-10-18 04:00:23",
-      "request": "d98eb88d-5d07-49a0-8942-2a33c1d1ef56",
+      "time": "2026-10-18 04:10:32",
+      "request": "ca0adc1f-0a30-48a7-8c8e-93c5f9d8d77f",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 255}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
     },
     {
       "id": 8,
-      "time": "2026-10-18 04:00:23",
-      "request": "402b1efe-d519-4974-8ba7-3508f4d217fb",
+      "time": "2026-10-18 04:10:31",
+      "request": "cdc34faf-ab5e-468f-8574-ec595c5d3fe7",
       "provider": "codex",
       "code": "ok",
       "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
     },
     {
       "id": 7,
-      "time": "2026-10-18 04:00:21",
-      "request": "cc515888-e79d-4142-a3a8-6d91f453d621",
+      "time": "2026-10-18 04:10:29",
+      "request": "6f952264-3634-4753-9b2c-dd1e193fc860",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 5, \"query_terms_total\": 5, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
     },
     {
       "id": 6,
-      "time": "2026-10-18 04:00:20",
-      "request": "b4d4d326-0be7-4cb1-a83b-79de18c570a0",
+      "time": "2026-10-18 04:10:28",
+      "request": "7766d647-aded-4be1-a1fe-8356109be138",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 706}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 708}"
     },
     {
       "id": 5,
-      "time": "2026-10-18 04:00:17",
-      "request": "718ffb2a-9276-42a7-9932-b81ddf6922a5",
+      "time": "2026-10-18 04:10:25",
+      "request": "7cc5989c-3f24-451c-bc91-71b67b8df593",
       "provider": null,
       "code": "cancelled",
-      "details": "{\"elapsed_ms\": 26}"
+      "details": "{\"elapsed_ms\": 24}"
     },
     {
       "id": 4,
-      "time": "2026-10-18 04:00:15",
-      "request": "f218d985-eca0-421d-afe2-ebba4d9feb01",
-      "provider": "codex",
-      "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 2, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
-    },
-    {
-      "id": 3,
-      "time": "2026-10-18 04:00:15",
-      "request": "49483998-0a7e-445d-8beb-5d5a01716df2",
-      "provider": null,
-      "code": "cancelled",
-      "details": "{\"elapsed_ms\": 0}"
-    },
-    {
-      "id": 2,
-      "time": "2026-10-18 04:00:14",
-      "request": "a61b88c6-3234-433f-b7a6-2e31937c8c9a",
+      "time": "2026-10-18 04:10:23",
+      "request": "c6cd0484-10ac-42e6-9dc5-73cbf9c95a47",
       "provider": "codex",
       "code": "ok",
       "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 2, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 257}"
     },
     {
-      "id": 1,
-      "time": "2026-10-18 04:00:13",
-      "request": "a561e84e-2f27-43ea-85f5-a7a27826ae4e",
+      "id": 3,
+      "time": "2026-10-18 04:10:23",
+      "request": "ed23aa96-5e11-452b-826c-866c19c23f1e",
+      "provider": null,
+      "code": "cancelled",
+      "details": "{\"elapsed_ms\": 30}"
+    },
+    {
+      "id": 2,
+      "time": "2026-10-18 04:10:22",
+      "request": "b1d65017-ae4d-4fa2-a20c-323a308c7ed8",
       "provider": "codex",
       "code": "ok",
-      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 707}"
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 2, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 14, \"query_terms_total\": 14, \"query_terms_truncated\": false}, \"elapsed_ms\": 258}"
+    },
+    {
+      "id": 1,
+      "time": "2026-10-18 04:10:21",
+      "request": "36925311-bf1a-48f5-af01-9b61bc85f768",
+      "provider": "codex",
+      "code": "ok",
+      "details": "{\"provider\": \"codex\", \"requested_model\": \"auto\", \"requested_effort\": \"high\", \"fallback_reason\": null, \"retrieval\": {\"selected\": 1, \"total\": 4, \"reason\": \"fts5_bm25\", \"query_terms\": 9, \"query_terms_total\": 9, \"query_terms_truncated\": false}, \"elapsed_ms\": 706}"
     }
   ]
 }

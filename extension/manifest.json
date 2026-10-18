@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WatchOutTeacher",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Alt / Option 划词，结合本地课程资料获取简短答案与英文解释。支持 Windows 与 macOS。",
   "permissions": [
     "nativeMessaging",

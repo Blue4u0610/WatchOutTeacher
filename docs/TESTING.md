@@ -1,6 +1,6 @@
 # Testing
 
-Version **0.2.2** includes drag-and-drop imports, Claude Desktop CLI discovery, native Windows support and configurable answer instructions. The suite contains **39 Python tests** (two Windows-only tests are skipped on macOS), **42 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
+Version **0.2.3** includes drag-and-drop imports, Claude Desktop CLI discovery, native Windows support and configurable answer instructions. The suite contains **40 Python tests** (two Windows-only tests are skipped on macOS), **44 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
 
 ## Run locally
 
@@ -31,7 +31,7 @@ The browser runner creates a temporary profile, a unique Native Messaging host n
 | --- | --- |
 | Local bridge | Binary message framing, caller identity, Unicode paths/stdio, chunked imports, CLI argument quoting, cancellation/timeouts and descendant cleanup |
 | Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
-| Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation, index deletion, multi-file drops, invalid files and drops outside the import area |
+| Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation, index deletion, multi-file drops, invalid files, a 40 MB synthetic PPTX, further drops during a batch and drops outside the import area |
 | Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments, macOS desktop CLI discovery and login-state reporting |
 | Settings | Persistent model/effort choices, answer instructions/default reset, catalog filtering and unsupported combinations |
 | Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
@@ -68,3 +68,7 @@ Windows real-account Codex / Claude login and inference have not been exercised 
 - Browser menu zoom, operating-system shortcut conflicts and very small embedded frames.
 
 For a useful bug report, include the version, browser, provider, reproduction steps and error category. Use the bundled fixture where possible. Do not include account tokens, private course files or your local course database.
+
+## Large local document check
+
+The 0.2.3 macOS browser suite also passed with a user-provided 41 MB, 122-slide PPTX replacing the synthetic large deck. The test used an isolated course database and the real parser; the file itself is not included in this repository or sent to an AI provider. Set `COURSE_ASSIST_TEST_DOCUMENT` to an absolute local PPTX path to repeat this check. This does not simulate Zotero’s native cross-application drag payload; that transfer still needs verification using the received-file count.

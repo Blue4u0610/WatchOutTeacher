@@ -86,6 +86,8 @@ Authorize `http://localhost:8765`, open the [local demo](http://localhost:8765/f
 
 Next, create a course in settings and drag PDF, PPTX, TXT or MD files into the import area, or use the file picker. Multiple files are supported. Wait for **已导入** (“Imported”). To test references, import `tests/material.md` and select the second demo question. The file defines Violet as the fictional Lumen protocol's ready color; the reference should point to that file.
 
+For a Zotero batch drop, check the received-file count shown in the import area. If it is lower than the selected attachment count, first drag the attachments to a folder in Finder / File Explorer, then drag those files into the extension. The queue lists every file the browser actually provides, with progress and individual results; further drops can be added while importing.
+
 ## Everyday use
 
 | Action | Gesture |
@@ -137,7 +139,7 @@ Files are parsed into text when imported and stored in a local SQLite index. Eac
 | PPTX | Text boxes, grouped text and tables | No image/chart interpretation or speaker notes |
 | TXT / Markdown | UTF-8 text | References identify chunks, not line numbers |
 
-The per-file limit is **30 MB**. Legacy `.ppt`, Word files, images and automatic screenshots are not supported. Keyword retrieval has limits with synonyms, Chinese tokenization and cross-language questions. If nothing matches, the tool reports that it used opening chunks instead. A valid reference identifies supplied material; it does not prove the model's interpretation is correct.
+The per-file limit is **100 MB**. Legacy `.ppt`, Word files, images and automatic screenshots are not supported. Keyword retrieval has limits with synonyms, Chinese tokenization and cross-language questions. If nothing matches, the tool reports that it used opening chunks instead. A valid reference identifies supplied material; it does not prove the model's interpretation is correct.
 
 The local index lives at:
 

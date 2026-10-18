@@ -1,6 +1,6 @@
 const $ = id => document.getElementById(id);
 let state, deleting;
-let uploading=false, dragDepth=0;
+let uploading=false, dragDepth=0, uploadQueue=[];
 let modifierLabel='Alt / Option';
 async function platformLabels() {
   const {os}=await chrome.runtime.getPlatformInfo();
@@ -153,40 +153,66 @@ $('settings-form').onsubmit=e=>{e.preventDefault();act(async()=>{
   await chrome.storage.local.set({gesture:$('gesture').value,theme:$('theme').value}); status('设置已保存。');
 });};
 function uploadControls() {
-  const disabled=uploading || !state?.settings.active_course;
+  const disabled=!state?.settings.active_course;
   $('files').disabled=disabled;
   $('drop-zone').setAttribute('aria-disabled',String(disabled));
   $('drop-zone').setAttribute('aria-busy',String(uploading));
-  $('drop-hint').textContent=uploading?'正在导入，请稍候…':disabled?'请先选择或创建课程。':'支持一次拖入多个文件；PDF、PPTX、TXT、MD，每个最多 30 MB。';
+  $('drop-hint').textContent=uploading?'正在导入，可继续拖入或选择文件加入队列。':disabled?'请先选择或创建课程。':'支持一次拖入多个文件；PDF、PPTX、TXT、MD，每个最多 100 MB。';
+}
+function queueSummary() {
+  const success=uploadQueue.filter(job=>job.status==='success').length;
+  const failed=uploadQueue.filter(job=>job.status==='error').length;
+  $('import-summary').hidden=false;
+  $('import-summary').textContent=`本批收到 ${uploadQueue.length} 份 · 已导入 ${success} 份 · 失败 ${failed} 份 · 待完成 ${uploadQueue.length-success-failed} 份`;
+}
+function jobStatus(job,state,message) {
+  job.status=state; job.row.dataset.state=state;
+  job.note.textContent=message; queueSummary();
 }
 async function importFiles(files) {
-  if(uploading)throw new Error('正在导入资料，请完成后再添加。');
   const course=state?.settings.active_course; if(!course)throw new Error('请先选择课程。');
-  if(!files.length)throw new Error('请拖入文件，暂不支持文件夹或网页链接。');
+  if(!files.length)throw new Error('未收到可导入的文件。请从 Finder／资源管理器拖入文件，或点击选择文件；Zotero 可能只传递了引用文本。');
+  if(!uploading){uploadQueue=[]; $('import-queue').replaceChildren();}
+  $('import-queue').hidden=false;
+  for(const file of files){
+    const row=text('li','',$('import-queue'));
+    text('strong',`${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`,row);
+    const note=text('span','等待导入',row,'small');
+    uploadQueue.push({file,course,row,note,status:'waiting'});
+  }
+  queueSummary();
+  if(uploading)return;
   uploading=true; uploadControls(); $('progress').hidden=false;
-  const errors=[];
   try {
-    for(const file of files) {
+    for(let index=0;index<uploadQueue.length;index++) {
+      const job=uploadQueue[index], {file,course}=job;
       let token;
       try {
         if(!/\.(pdf|pptx|txt|md)$/i.test(file.name))throw new Error('不支持此格式。支持 PDF、PPTX、TXT、MD。');
-        if(!file.size || file.size>30*1024*1024)throw new Error('文件为空或超过 30 MB。');
-        status(`正在上传 ${file.name}…`); $('progress').value=0;
+        if(!file.size)throw new Error('文件为空。');
+        if(file.size>100*1024*1024)throw new Error(`文件为 ${(file.size/1024/1024).toFixed(2)} MB，超过 100 MB 上限。`);
+        jobStatus(job,'uploading','正在上传…');
+        status(`正在上传第 ${index+1} / ${uploadQueue.length} 份：${file.name}…`); $('progress').value=0;
         token=(await rpc('upload_begin',{course,name:file.name,size:file.size})).token;
         for(let offset=0;offset<file.size;offset+=192*1024) {
           const bytes=new Uint8Array(await file.slice(offset,offset+192*1024).arrayBuffer());
           let binary=''; for(const byte of bytes)binary+=String.fromCharCode(byte);
           await rpc('upload_chunk',{token,offset,data:btoa(binary)});
           $('progress').value=Math.round((offset+bytes.length)/file.size*100);
+          job.note.textContent=`正在上传 · ${$('progress').value}%`;
         }
-        status(`正在解析 ${file.name}…`); render(await rpc('upload_finish',{token})); token=null;
+        jobStatus(job,'parsing','正在解析…');
+        status(`正在解析第 ${index+1} / ${uploadQueue.length} 份：${file.name}…`);
+        render(await rpc('upload_finish',{token})); token=null;
+        jobStatus(job,'success','已导入');
       } catch(e) {
-        errors.push(`${file.name}：${e.message}`);
+        jobStatus(job,'error',e.message);
         if(token)try{await rpc('upload_abort',{token});}catch{}
       }
     }
     render(await rpc('state'));
-    status(errors.length?errors.join('\n'):'资料已导入。重新划词即可使用当前课程资料。',!!errors.length);
+    const errors=uploadQueue.filter(job=>job.status==='error');
+    status(errors.length?`批量导入完成：${uploadQueue.length-errors.length} 份成功，${errors.length} 份失败。请查看资料区的逐项结果。\n`+errors.map(job=>`${job.file.name}：${job.note.textContent}`).join('\n'):`${uploadQueue.length} 份资料已导入。重新划词即可使用当前课程资料。`,!!errors.length);
   } finally { uploading=false; $('files').value=''; uploadControls(); $('progress').hidden=true; }
 }
 $('files').onchange=()=>{const files=[...$('files').files]; if(files.length)void act(()=>importFiles(files));};
@@ -196,11 +222,11 @@ function clearDrag(){dragDepth=0;dropZone.classList.remove('drag-over');}
 dropZone.addEventListener('dragenter',e=>{
   if(!hasFiles(e))return;
   e.preventDefault(); dragDepth++;
-  if(!uploading && state?.settings.active_course)dropZone.classList.add('drag-over');
+  if(state?.settings.active_course)dropZone.classList.add('drag-over');
 });
 dropZone.addEventListener('dragover',e=>{
   if(!hasFiles(e))return;
-  e.preventDefault(); e.dataTransfer.dropEffect=uploading || !state?.settings.active_course?'none':'copy';
+  e.preventDefault(); e.dataTransfer.dropEffect=!state?.settings.active_course?'none':'copy';
 });
 dropZone.addEventListener('dragleave',e=>{if(hasFiles(e) && --dragDepth<=0)clearDrag();});
 dropZone.addEventListener('drop',e=>{
@@ -209,7 +235,10 @@ dropZone.addEventListener('drop',e=>{
   if(items.some(item=>item.webkitGetAsEntry?.()?.isDirectory)){
     status('暂不支持拖入文件夹，请打开文件夹后选择其中的资料。',true); return;
   }
-  const files=Array.from(e.dataTransfer?.files || []);
+  // Capture every File synchronously before the drag data store becomes protected.
+  const itemFiles=items.filter(item=>item.kind==='file').map(item=>item.getAsFile()).filter(Boolean);
+  const listedFiles=Array.from(e.dataTransfer?.files || []);
+  const files=itemFiles.length>=listedFiles.length?itemFiles:listedFiles;
   void act(()=>importFiles(files));
 });
 // Prevent dropped files outside the import area from replacing the settings page.

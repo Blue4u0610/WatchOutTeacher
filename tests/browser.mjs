@@ -128,7 +128,7 @@ try {
    }
    const docsBefore=(await rpc('state')).data.documents.length;
    await dropFiles([{name:'拖放讲义.txt',text:'Course notes: review your materials.'},{name:'drop-notes.md',text:'# Notes\nRead the instructions.'}]);
-   assert.equal(await opts.locator('#files').isDisabled(),true);
+   assert.equal(await opts.locator('#files').isDisabled(),false);
    await waitFor(async()=> (await opts.locator('#status').textContent()).includes('资料已导入'));
    assert.equal((await rpc('state')).data.documents.length,docsBefore+2);
    assert.equal(await opts.locator('#files').isDisabled(),false);
@@ -151,6 +151,31 @@ try {
    await opts.locator('#courses').selectOption(activeCourse);
    await waitFor(async()=> (await rpc('state')).data.settings.active_course===activeCourse);
    pass('drop requires a selected course');
+   await opts.locator('#course-name').fill('Batch import test');await opts.locator('#course-form button').click();
+   await waitFor(async()=> (await opts.locator('#status').textContent()).includes('课程已创建'));
+   await opts.evaluate(()=>{const input=document.createElement('input');input.type='file';input.multiple=true;input.id='drop-fixture';input.hidden=true;document.body.append(input);});
+   const largeFile=process.env.COURSE_ASSIST_TEST_DOCUMENT || path.join(resultDir,'large-material.pptx');
+   await opts.locator('#drop-fixture').setInputFiles([largeFile,path.join(resultDir,'material.pdf'),path.join(resultDir,'material.pptx')]);
+   await opts.evaluate(()=>{
+     const d=new DataTransfer();for(const file of document.getElementById('drop-fixture').files)d.items.add(file);
+     document.getElementById('drop-zone').dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:d}));
+   });
+   assert((await opts.locator('#import-summary').textContent()).includes('收到 3 份'));
+   assert.equal(await opts.locator('#drop-zone').getAttribute('aria-busy'),'true');
+   await dropFiles(Array.from({length:12},(_,i)=>({name:`batch-${i}.txt`,text:`Batch document ${i}.`})).concat([{name:'bad.zip',text:'bad'}]));
+   assert((await opts.locator('#import-summary').textContent()).includes('收到 16 份'));
+   await waitFor(async()=> (await opts.locator('#drop-zone').getAttribute('aria-busy'))==='false',60000);
+   assert.equal(await opts.locator('#import-queue li[data-state=success]').count(),15);
+   assert.equal(await opts.locator('#import-queue li[data-state=error]').count(),1);
+   const batchState=(await rpc('state')).data;
+   assert.equal(batchState.documents.filter(d=>d.course===batchState.settings.active_course && d.status==='ready').length,15);
+   assert(batchState.documents.some(d=>d.name===path.basename(largeFile) && d.status==='ready' && d.chunks>0));
+   pass('large PPTX over 30 MB imports through browser drag and native parser');
+   pass('batch queue preserves all files, accepts another drop while busy and reports individual failures');
+   await opts.screenshot({path:path.join(resultDir,'batch-import.png'),fullPage:true});
+   await opts.locator('#courses').selectOption(activeCourse);
+   await waitFor(async()=> (await rpc('state')).data.settings.active_course===activeCourse);
+
  }
 
  const page=await context.newPage();await page.goto(`http://localhost:${port}/fixture.html`);

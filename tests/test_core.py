@@ -9,7 +9,7 @@ import threading
 import time
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'bridge'))
-from common import AppError
+from common import AppError, MAX_FILE
 from host import Host, read_frame, encode_frame, extension_origin
 from parser import parse
 from providers import answer_with_fallback, validate, run, CLIProvider
@@ -152,6 +152,18 @@ class ImportTests(unittest.TestCase):
         from pptx.util import Inches
         deck=Presentation();deck.slides.add_slide(deck.slide_layouts[6]);slide=deck.slides.add_slide(deck.slide_layouts[6]);slide.shapes.add_textbox(Inches(1),Inches(1),Inches(5),Inches(1)).text='Lumen readiness is Violet'
         p=self.path/'actual.pptx'; deck.save(str(p)); parsed=parse(p,'.pptx'); self.assertEqual(parsed['units'][1]['number'],2); self.assertIn('Violet',parsed['units'][1]['text'])
+    def test_upload_accepts_large_decks_and_rejects_over_limit(self):
+        h=Host(self.path)
+        try:
+            course=h.dispatch('course_create',{'name':'Large uploads'})['settings']['active_course']
+            self.assertEqual(MAX_FILE,100*1024*1024)
+            for size in [43_019_750,MAX_FILE]:
+                token=h.dispatch('upload_begin',{'name':'large.pptx','size':size,'course':course})['token']
+                h.dispatch('upload_abort',{'token':token})
+            for size in [0,MAX_FILE+1]:
+                with self.assertRaises(AppError): h.dispatch('upload_begin',{'name':'large.pptx','size':size,'course':course})
+        finally:h.cleanup()
+
     def test_chunk_upload_and_failed_status(self):
         h=Host(self.path)
         try:

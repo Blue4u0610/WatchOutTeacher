@@ -115,7 +115,7 @@ class Host:
             name=short_text(payload.get('name'),200,'文件名')
             name=Path(name).name
             size=payload.get('size')
-            require(type(size) is int and 0<size<=MAX_FILE,'空文件或超过 30 MB。')
+            require(type(size) is int and 0<size<=MAX_FILE,f'文件为空或超过 {MAX_FILE//1024//1024} MB。')
             require(Path(name).suffix.lower() in ['.pdf','.pptx','.txt','.md'],'不支持此格式。支持 PDF、TXT、MD、PPTX。')
             course=payload.get('course'); self.store.course_exists(course)
             token=str(uuid.uuid4()); path=Path(self.temp.name)/token

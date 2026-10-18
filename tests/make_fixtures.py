@@ -20,3 +20,9 @@ for line in lines:
     slide=deck.slides.add_slide(deck.slide_layouts[6]);slide.shapes.add_textbox(Inches(.5),Inches(1),Inches(9),Inches(2)).text=line
 
 deck.save(str(out/'material.pptx'))
+
+# A media-heavy deck above the old 30 MB upload limit. No private course content.
+import shutil, zipfile
+shutil.copyfile(out/'material.pptx',out/'large-material.pptx')
+with zipfile.ZipFile(out/'large-material.pptx','a') as archive:
+    archive.writestr('ppt/media/upload-test.bin',b'\0'*(40*1024*1024),compress_type=zipfile.ZIP_STORED)

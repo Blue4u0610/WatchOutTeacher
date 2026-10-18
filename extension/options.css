@@ -5,3 +5,5 @@
 textarea{resize:vertical;min-height:130px;line-height:1.6}#reset-instructions{margin-bottom:14px}
 
 .drop-zone{border:1.5px dashed #a8baa1;border-radius:8px;padding:22px;background:#f8faf5;transition:background .15s,border-color .15s}.drop-zone.drag-over{border-color:#3a6338;background:#e6efdf;box-shadow:0 0 0 3px #718c6520}.drop-zone[aria-disabled="true"]{background:#f5f6f3;color:#6e796a}.drop-zone .upload{margin-bottom:0}.drop-zone:focus-within{outline:2px solid #718c65;outline-offset:2px}
+
+#import-queue{padding-left:22px;max-height:260px;overflow:auto}#import-queue li{overflow-wrap:anywhere}#import-queue span{display:block}#import-queue [data-state="error"] span{color:#8f3b29}#import-queue [data-state="success"] span{color:#3a6338}#import-summary{font-size:13px;line-height:1.6}

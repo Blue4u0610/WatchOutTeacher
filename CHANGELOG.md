@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Raise the per-file upload limit to 100 MB for larger lecture decks.
+- Show a batch queue with received counts and per-file progress, success and errors; allow further drops while importing.
+- Capture file items synchronously and explain the Finder / Explorer fallback when Zotero supplies fewer files than selected.
+
 ## 0.2.2
 
 - Drag multiple course files into the import area, with per-file validation and upload feedback.
