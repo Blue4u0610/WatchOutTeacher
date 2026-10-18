@@ -75,21 +75,19 @@ Codex 的 `codex_effort` 设置默认空字符串（自动），持久化在 SQL
 
 原生 Windows 安装在 `%LOCALAPPDATA%\WatchOutTeacher`，macOS 沿用 `~/Library/Application Support/CourseAssist`。安装器创建隔离虚拟环境，通过 distlib 生成 Windows `.exe` 启动器，在 HKCU 的 Chrome / Edge / Chromium / Chrome for Testing NativeMessagingHosts 项注册绝对 manifest 路径。无管理员权限要求，扩展 ID 与消息宿主名不变。启动器只包含本地安装路径，不包含凭据。
 
-Windows 的 Codex / Claude 搜索原生安装目录与绝对 PATH 项，只接受 `.exe`。Gemini 查找 Node 与官方 npm 包入口，通过 argv 直接运行 `.js`；不运行 npm 包装脚本或 WSL。继承登录所需的用户目录、系统目录和代理变量，不继承 API Key、PYTHONPATH 或 PYTHONHOME。宿主 stdio 使用二进制模式，文件与 CLI 输出明确使用 UTF-8。SQLite 事务结束显式关闭连接，避免 Windows 文件锁妨碍删除临时数据库。
+Windows 的 Codex / Claude 搜索原生安装目录与绝对 PATH 项，只接受 `.exe`。Gemini 查找原生 agy / agy.exe，直接通过 argv 调用，不经过 shell 或 WSL。继承登录所需的用户目录、系统目录和代理变量，不继承 API Key、PYTHONPATH 或 PYTHONHOME。宿主 stdio 使用二进制模式，文件与 CLI 输出明确使用 UTF-8。SQLite 事务结束显式关闭连接，避免 Windows 文件锁妨碍删除临时数据库。
 
 浏览器测试为每次运行生成独立宿主名和临时注册表项，不覆盖日常安装；测试结束注销。生产安装器生命周期测试仅允许在一次性 CI 机器上运行。
 
 
-## Gemini CLI
+## Gemini via Antigravity CLI
 
-`GeminiProvider` 支持 0.64.0 起的所需参数，发布离线验证固定为 0.64.0。直接运行已安装的官方 npm 包入口，不使用 npx 下载。检测只检查版本、参数和 Google OAuth 缓存是否存在，不读取令牌，不把缓存存在描述为登录有效。
+`GeminiProvider` supports the verified native Antigravity CLI **1.4.2** contract. Detection calls `agy models` to verify authentication and obtain account-visible Gemini IDs; it never opens or copies credentials. Other model families offered by Antigravity are filtered out. Auto selects the first Gemini entry; an explicit model ID must begin with `gemini-`. High / Medium / Low variants are selected as models, independently of Codex effort.
 
-每题使用独立临时目录的 workspace settings、空 `.gemini/.env`、专用 system prompt 和 admin 级工具拒绝策略。临时目录显式受信任，使 CLI 首次加载即应用配置。关闭 core tools、Hooks、Skills、Agents、自动记忆及工具发现命令；`--extensions none` 关闭扩展，MCP 允许列表使用每题随机生成的不存在的服务名，旧式 MCP server command 置空。发现系统级 settings/defaults/policies 时拒绝调用，避免覆盖组织策略。未来 CLI 或服务端管理配置变化仍可能影响行为，这不是完整 OS 沙箱。
+Each question creates a fresh temporary workspace and a custom main agent with `excludeDefaultComponents: true` and `tools: []`. The CLI has no supported per-request hook-disable flag, so the adapter checks global customization paths and refuses hooks, MCP, plugins, rules or unknown settings before launch. It leaves those files untouched. This is a conservative compatibility restriction, not an OS sandbox; CLI upgrades require revalidation. The init event lists the CLI registry, not the custom agent’s actual model tool schema. A live canary test verifies that the custom agent cannot read a requested fixture file.
 
-仅使用 `oauth-personal`；不继承 API Key、Vertex AI、Node 注入或自定义 Gemini home。题目通过 stdin 作为 JSON 字符串发送，`@` 转为 JSON Unicode 转义，防止 CLI 在推理前展开题目中的文件引用。每题新会话，不恢复聊天。
+The question goes through NDJSON stdin, with the inner task JSON escaping `@` and slash-command expansion disabled. The response must have a successful final result and valid answer JSON; tool/subagent events and partial or empty results are rejected. Existing schema and citation allowlists still apply. No previous conversation is resumed. No API billing or runtime injection environment variables are inherited.
 
-只收集 stream-json 的 assistant message，要求成功 result；工具事件、错误、不完整流及无效 schema 均拒绝。模型别名是预设，不是账户权限列表；诊断记录请求值，不声称服务端确认的模型名称。Gemini 不继承 Codex 推理强度。
+The temporary workspace is removed after completion. Antigravity’s own conversation records remain in its user data directory; the bridge does not claim to erase provider history. Normal bridge diagnostics exclude question/answer text. The Google data-use preference is owned by the user’s account and is not changed by installing this extension.
 
-CLI 会写会话缓存。进程结束后按 registry 和 `.project_root` 双重匹配，仅清理本次临时项目的 tmp/history；保留项目路径登记，避免与其他进程修改 registry 冲突。强制终止宿主、磁盘错误或存储格式变化可能留下记录。服务端保留以 Google 条款为准。
-
-升级时备用列表仍为 Codex / Claude，Gemini 不自动加入。用户勾选后才允许作为备用，执行时跳过首选；无备用勾选时只请求首选服务。
+Fallback providers are an explicit ordered selection. Upgrades preserve Codex / Claude backups without opting into Gemini. Cancellation and normal insufficient-context answers do not trigger fallback.

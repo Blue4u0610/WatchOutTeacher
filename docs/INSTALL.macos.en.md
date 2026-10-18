@@ -47,21 +47,21 @@ Complete the first-run sign-in flow. The Claude desktop app and the `claude` com
 
 All routes reuse the CLI's own sign-in state. There is no API-key field to fill in, and the extension does not drive your desktop chat window. If you install only Claude Code, select it as your preferred provider in step 6.
 
-### Or: Google account → Gemini CLI
+### Or: Google account → Gemini through Antigravity CLI
 
-Install [Node.js 22 LTS](https://nodejs.org/en/download) (Gemini CLI requires Node 20+), reopen your terminal, then run:
+Install Google’s native CLI; Node.js is not required:
 
-```sh
-npm install -g @google/gemini-cli@0.64.0
-gemini --version
-gemini
+```bash
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+agy --version
+agy
 ```
 
-Choose **Login with Google** and complete the browser sign-in yourself. Version 0.64.0 is the release-tested baseline. The Gemini website or mobile app alone cannot provide the local command. On Windows, if PowerShell blocks `npm.ps1`, run `npm.cmd install -g @google/gemini-cli@0.64.0` and `gemini.cmd` for installation/sign-in; the bridge itself launches Node and the package entry point directly, without a shell.
+This release supports **Antigravity CLI 1.4.2**. If the installer delivers a newer version, use the matching Windows/macOS archive from the [official 1.4.2 release](https://github.com/google-antigravity/antigravity-cli/releases/tag/1.4.2); unverified versions are rejected. Complete Google sign-in, review the terms and choose your data-use preference. The legacy `gemini` command is not used.
 
-Reload the extension, open settings, select **Gemini CLI**, choose Auto / Pro / Flash / Flash-Lite (or a custom model ID), then save. The presets are CLI aliases, not an account entitlement list. Select only the fallback providers whose quota you want to use. Upgrades do not automatically enable Gemini as a fallback.
+Reload the extension, select **Gemini**, refresh the model list and save. The list comes from your account; effort variants such as High / Medium / Low are included in the model choice when available. Auto chooses the first Gemini model returned by the account catalog. No fallback is enabled for Gemini automatically.
 
-This adapter uses **Google OAuth only**; API keys, Vertex AI and service-account authentication are not supported. It reuses CLI authentication without reading or copying tokens. Account eligibility, regions, model access and quota depend on Google. See the [login guide](https://geminicli.com/docs/get-started/authentication/) and [quota documentation](https://geminicli.com/docs/resources/quota-and-pricing/). Real-account Gemini answers are not part of the automated release tests.
+The bridge reuses CLI authentication without reading or copying tokens. It does not use API keys or Vertex AI. The current adapter requires a clean global Antigravity customization configuration: hooks, MCP, plugins and global rules cause a capability error rather than being executed. CLI conversation records remain on disk; provider retention and quota follow your Google account terms. See [Google’s migration guide](https://antigravity.google/docs/cli/gcli-migration/).
 
 ## 2. Install a browser and Python
 
@@ -73,7 +73,7 @@ python3 --version
 
 You need **Python 3.9+** with SQLite FTS5. If it is missing, use the [macOS installer from python.org](https://www.python.org/downloads/macos/) or run `brew install python` if you already use [Homebrew](https://brew.sh/).
 
-Codex / Claude use needs no Node.js or Xcode; Gemini CLI requires Node.js. The initial dependency installation needs an internet connection.
+None of the three providers requires Node.js or Xcode. The initial dependency installation needs an internet connection.
 
 ## 3. Download the project
 

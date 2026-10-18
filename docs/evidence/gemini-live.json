@@ -1,0 +1,62 @@
+{
+  "cli_version": "1.4.2",
+  "requested_model": "gemini-3.8-flash-medium",
+  "cases": [
+    {
+      "case": "arithmetic",
+      "result": {
+        "answer": "B: 4",
+        "explanation_en": "Based on basic arithmetic from general knowledge (as no course materials were provided), adding 2 and 2 yields 4.",
+        "sources": [],
+        "basis": "general_knowledge",
+        "needs_more_context": false,
+        "diagnostics": {
+          "provider": "gemini",
+          "requested_model": "gemini-3.8-flash-medium",
+          "requested_effort": "auto",
+          "fallback_reason": null,
+          "retrieval": {
+            "selected": 0,
+            "total": 0,
+            "reason": "未选择课程"
+          },
+          "elapsed_ms": 9370
+        },
+        "warnings": []
+      }
+    },
+    {
+      "case": "course_reference",
+      "result": {
+        "answer": "B: Violet",
+        "explanation_en": "According to the course material, Violet designates the ready state in the Lumen protocol, while Amber signifies waiting.",
+        "sources": [
+          {
+            "document_id": "b7d551da-dc5a-4353-ba4c-1c7712739c13",
+            "document": "gemini-fixture.md",
+            "page_or_slide": 1,
+            "kind": "text"
+          }
+        ],
+        "basis": "course_material",
+        "needs_more_context": false,
+        "diagnostics": {
+          "provider": "gemini",
+          "requested_model": "gemini-3.8-flash-medium",
+          "requested_effort": "auto",
+          "fallback_reason": null,
+          "retrieval": {
+            "selected": 1,
+            "total": 1,
+            "reason": "fts5_bm25",
+            "query_terms": 15,
+            "query_terms_total": 15,
+            "query_terms_truncated": false
+          },
+          "elapsed_ms": 6002
+        },
+        "warnings": []
+      }
+    }
+  ]
+}

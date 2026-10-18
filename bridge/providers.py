@@ -50,7 +50,7 @@ def environment():
     paths = [str(Path.home()/'.local/bin')]
     if sys.platform == 'win32':
         local = Path(os.environ.get('LOCALAPPDATA', str(Path.home()/'AppData/Local')))
-        paths += [str(local/'Programs/OpenAI/Codex/bin'), str(local/'Microsoft/WinGet/Links')]
+        paths += [str(local/'Programs/OpenAI/Codex/bin'), str(local/'Microsoft/WinGet/Links'), str(local/'agy/bin')]
         # Keep absolute installed tool paths; never search the question's working directory.
         paths += [p for p in os.environ.get('PATH','').split(os.pathsep) if Path(p).is_absolute()]
         env['NoDefaultCurrentDirectoryInExePath'] = '1'

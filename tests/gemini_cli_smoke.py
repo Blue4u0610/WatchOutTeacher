@@ -1,58 +1,51 @@
-"""Offline verification against the real pinned Gemini CLI bundle. No account or model call."""
+"""Offline native CLI contract check. --install downloads the pinned official release in CI."""
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
+import tarfile
 import tempfile
+import urllib.request
+import zipfile
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'bridge'))
-from gemini import command, isolation
-from providers import environment
+from gemini import TESTED_VERSION, command
 
-cmd=command()
-if not cmd: raise SystemExit('Install @google/gemini-cli@0.64.0 before this smoke test')
-bundle=Path(cmd[1]).parent
-# Test-only introspection of the pinned release, never a production dependency on internals.
-def module_containing(marker):
-    for path in bundle.glob('chunk-*.js'):
-        if marker in path.read_text(encoding='utf-8'): return path.as_uri()
-    raise RuntimeError('Pinned Gemini CLI bundle layout changed')
-settings_module=module_containing('function loadSettings(workspaceDir')
-policy_module=module_containing('async function createPolicyEngineConfig(')
-with tempfile.TemporaryDirectory(prefix='watchoutteacher-gemini-') as d:
-    p=Path(d);env={**environment(),**isolation(d)}
-    home=p/'fixture-home';(home/'.gemini').mkdir(parents=True)
-    (home/'.gemini/.env').write_text('GEMINI_API_KEY=must-not-load\n',encoding='utf-8')
-    (home/'.gemini/settings.json').write_text(json.dumps({
-        'tools':{'core':['run_shell_command'],'discoveryCommand':'must-not-run'},
-        'mcp':{'serverCommand':'must-not-run','allowed':['old-server']},
-        'hooksConfig':{'enabled':True},'skills':{'enabled':True},
-        'experimental':{'enableAgents':True,'autoMemory':True},
-        'security':{'auth':{'selectedType':'gemini-api-key'}},
-        'context':{'fileName':'GEMINI.md'},'model':{'name':'wrong-model'}
-    }),encoding='utf-8')
-    env['GEMINI_CLI_HOME']=str(home)
-    js='''
-import assert from 'node:assert/strict';
-const {loadSettings}=await import(SETTINGS_MODULE);
-const {createPolicyEngineConfig}=await import(POLICY_MODULE);
-const s=loadSettings();
-assert.equal(s.isTrusted,true); assert.deepEqual(s.errors,[]);
-assert.deepEqual(s.merged.tools.core,[]); assert.equal(s.merged.tools.discoveryCommand,'');
-assert.equal(s.merged.hooksConfig.enabled,false); assert.equal(s.merged.skills.enabled,false);
-assert.equal(s.merged.experimental.enableAgents,false); assert.equal(s.merged.experimental.autoMemory,false);
-assert.equal(s.merged.mcp.serverCommand,'');
-assert.equal(s.merged.mcp.allowed.length,1); assert.match(s.merged.mcp.allowed[0],/watchoutteacher-gemini-.*-no-mcp$/);
-assert.equal(s.merged.security.auth.selectedType,'oauth-personal');
-assert.equal(s.merged.security.auth.enforcedType,'oauth-personal');
-assert.equal(s.merged.model.name,'auto'); assert.equal(s.merged.model.maxSessionTurns,2);
-assert.equal(s.merged.general.maxAttempts,1); assert.equal(s.merged.telemetry.enabled,false);
-assert.match(s.merged.context.fileName,/watchoutteacher-gemini-.*-no-context.md$/);
-assert.equal(process.env.GEMINI_API_KEY,undefined);
-const policy=await createPolicyEngineConfig({adminPolicyPaths:[process.cwd()+'/deny-tools.toml']},'default',process.cwd()+'/empty',false);
-assert(policy.rules.some(r=>r.toolName==='*' && r.decision==='deny' && r.priority===5.999));
-console.log('PASS real Gemini CLI: workspace overrides, OAuth, no hooks/tools/agents, MCP allowlist, dotenv isolation and admin deny policy');
-'''.replace('SETTINGS_MODULE',json.dumps(settings_module)).replace('POLICY_MODULE',json.dumps(policy_module))
-    result=subprocess.run([cmd[0],'--input-type=module','-e',js],cwd=d,env=env,text=True,encoding='utf-8',capture_output=True,timeout=25)
-    if result.returncode: raise SystemExit(result.stderr[-5000:])
-    print(result.stdout.strip())
+with tempfile.TemporaryDirectory(prefix='watchoutteacher-cli-check-') as d:
+    if '--install' in sys.argv:
+        system={'Darwin':'mac','Windows':'windows'}[platform.system()]
+        arch='arm64' if platform.machine().lower() in ['arm64','aarch64'] else 'x64'
+        suffix='zip' if system=='windows' else 'tar.gz'
+        asset=f'agy_cli_{system}_{arch}.{suffix}'
+        url=f'https://github.com/google-antigravity/antigravity-cli/releases/download/{TESTED_VERSION}/{asset}'
+        data=urllib.request.urlopen(url,timeout=120).read()
+        executable=Path(d)/('agy.exe' if system=='windows' else 'agy')
+        if suffix=='zip':
+            with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                names=[n for n in archive.namelist() if Path(n).name=='agy.exe']
+                assert len(names)==1,names
+                executable.write_bytes(archive.read(names[0]))
+        else:
+            with tarfile.open(fileobj=io.BytesIO(data),mode='r:gz') as archive:
+                members=[m for m in archive.getmembers() if m.isfile() and Path(m.name).name=='agy']
+                assert len(members)==1
+                executable.write_bytes(archive.extractfile(members[0]).read())
+        executable.chmod(0o700)
+        cmd=[str(executable)]
+        digest=hashlib.sha256(data).hexdigest()
+    else:
+        cmd=command();digest=None
+    assert cmd,'Install Antigravity CLI 1.4.2 first'
+    def run(args):
+        result=subprocess.run(cmd+args,cwd=d,capture_output=True,text=True,check=True,timeout=15)
+        return result.stdout+result.stderr
+    assert run(['--version']).strip()==TESTED_VERSION
+    helptext=run(['--help'])
+    for flag in ['--agent','--input-format','--output-format','--disable-slash-commands','--model','--log-file']:
+        assert flag in helptext,flag
+    evidence={'cli':TESTED_VERSION,'platform':platform.system(),'archive_sha256':digest,'flags_verified':True,'uses_account':False}
+    target=Path('test-results/gemini-cli-smoke.json');target.parent.mkdir(exist_ok=True)
+    target.write_text(json.dumps(evidence,indent=2),encoding='utf-8');print(json.dumps(evidence))

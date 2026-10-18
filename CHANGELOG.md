@@ -12,16 +12,15 @@ Dates below identify the code snapshot in America/New_York. GitHub publication d
 
 ### Added
 
-- Gemini CLI on Windows and macOS using Google OAuth, with Auto / Pro / Flash / Flash-Lite presets and custom model IDs.
-- A fallback-provider checklist: each service is opt-in; existing installations keep Codex / Claude defaults.
-- Streamed JSON validation, tool restrictions, isolated request configuration and scoped Gemini cache cleanup.
-- Bilingual Gemini setup in both OS guides, plus offline checks against Gemini CLI 0.64.0 in release CI.
+- Gemini through native Antigravity CLI 1.4.2 on Windows and macOS, with account-provided model choices including effort variants.
+- A fallback-provider checklist; upgrades preserve existing Codex / Claude choices without opting into Gemini.
+- Text-only custom-agent requests, streamed answer validation, and rejection of incompatible global customizations.
+- Bilingual installation guides and native CLI contract checks in release CI.
 
-### Notes
+### Verified
 
-- Gemini reuses course retrieval, citations and saved answer instructions. It does not add OCR or a separate Gemini effort control.
-- Google sign-in and live-account generation remain user-side validation steps; automated checks use no AI credentials.
-
+- Real Gemini arithmetic, course retrieval with a source citation, and a file-access canary on macOS.
+- The CLI retains local conversation records. Google account preferences control service-side data use.
 
 ## [0.2.3] - 2026-10-18
 

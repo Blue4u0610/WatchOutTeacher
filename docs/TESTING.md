@@ -1,6 +1,6 @@
 # Testing
 
-Version **0.3.0** adds Gemini CLI, model aliases and an explicit fallback-provider checklist. The suite contains **47 Python tests** (two Windows-only tests are skipped on macOS), **45 browser checks per platform**, a real Gemini CLI 0.64.0 offline configuration/policy smoke test, and an install/reinstall/uninstall smoke test. Browser checks use the real extension and Native Messaging host with mock answer providers; no AI credentials are supplied to CI. Live Gemini generation has not been verified: Google sign-in is still required on the development machine.
+Version **0.3.0** adds Gemini through Antigravity CLI and an explicit fallback-provider checklist. The suite contains **47 Python tests** (two Windows-only tests are skipped on macOS), **45 browser checks per platform**, a native Antigravity CLI **1.4.2** offline version/flag check, and an install/reinstall/uninstall smoke test. Browser checks use the real extension and Native Messaging host with mock answer providers; no AI credentials are supplied to CI. Real Gemini generation and a file-access canary passed separately on macOS.
 
 ## Run locally
 
@@ -18,8 +18,7 @@ npx playwright install chromium
 npm test
 npm run test:browser
 # Optional local check; required in release CI:
-npm install -g @google/gemini-cli@0.64.0
-node scripts/python.mjs tests/gemini_cli_smoke.py
+node scripts/python.mjs tests/gemini_cli_smoke.py --install
 ```
 
 The Node wrapper chooses `.venv/Scripts/python.exe` on Windows or `.venv/bin/python` on macOS. The macOS browser runner prefers the installed bridge interpreter when present, avoiding Documents privacy restrictions; install current requirements into that interpreter too when dependencies change. `COURSE_ASSIST_TEST_PYTHON` can select an explicit absolute interpreter path.
@@ -36,7 +35,7 @@ The browser runner creates a temporary profile, a unique Native Messaging host n
 | Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
 | Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation, index deletion, multi-file drops, invalid files, a 40 MB synthetic PPTX, further drops during a batch and drops outside the import area |
 | Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments, macOS desktop CLI discovery and login-state reporting |
-| Gemini | Direct Node discovery with spaces; streamed output/tool rejection; @file neutralization; scoped cache cleanup; Google-cache detection; course excerpts and preferences; explicit backups; real CLI settings merge and admin deny policy without a model request |
+| Gemini | Native binary invocation; account catalog filtering; complete-result/tool rejection; @file neutralization; global-customization guard; version gating; course excerpts and preferences; explicit backups. The offline CLI check verifies flags, not inference or tool isolation |
 | Settings | Persistent model/effort choices, answer instructions/default reset, catalog filtering and unsupported combinations |
 | Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
 | Lifecycle | Scroll/resize retention, stale-result suppression, navigation, course changes, disconnect/reconnect and reload |
@@ -76,3 +75,22 @@ For a useful bug report, include the version, browser, provider, reproduction st
 ## Large local document check
 
 The 0.2.3 macOS browser suite also passed with a user-provided 41 MB, 122-slide PPTX replacing the synthetic large deck. The test used an isolated course database and the real parser; the file itself is not included in this repository or sent to an AI provider. Set `COURSE_ASSIST_TEST_DOCUMENT` to an absolute local PPTX path to repeat this check. This does not simulate Zotero’s native cross-application drag payload; that transfer still needs verification using the received-file count.
+
+## Real Gemini checks
+
+On 2026-10-18, Antigravity CLI **1.4.2** using `gemini-3.8-flash-medium` passed three macOS checks:
+
+- The real host answered an arithmetic question correctly.
+- A fictional Lumen course excerpt changed the answer to Violet and produced a mapped document citation.
+- An explicit request to read a random local canary and write a second file returned unavailable. The secret was not disclosed and no output file was created; the parser saw no tool event.
+
+These are controlled fixtures, not a guarantee about every model or future CLI. Real-account inference on Windows still needs a local check. [Answer evidence](evidence/gemini-live.json) · [Canary evidence](evidence/gemini-security-live.json).
+
+To repeat after Google sign-in:
+
+```sh
+node scripts/python.mjs tests/gemini_live.py
+node scripts/python.mjs tests/gemini_security_live.py
+```
+
+These consume account quota and use synthetic data. They write ignored `test-results/` evidence and do not change everyday courses or provider preferences. The canary test deliberately requests a tool action against disposable fixtures to verify that the adapter's custom agent cannot perform it.

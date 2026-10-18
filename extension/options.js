@@ -42,7 +42,7 @@ function customVisibility(provider) {
 }
 function modelPicker(provider,value,custom=false) {
   const select=$(provider+'-model');
-  select.replaceChildren(new Option('自动（CLI 默认）',''));
+  select.replaceChildren(new Option(provider==='gemini'?'自动（账户首个 Gemini 模型）':'自动（CLI 默认）',''));
   for(const model of catalogs[provider]) select.add(new Option(model.name,model.id));
   select.add(new Option('自定义模型…','__custom__'));
   const known=catalogs[provider].some(model=>model.id===value);
