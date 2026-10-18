@@ -5,7 +5,12 @@ import sqlite3
 import uuid
 from common import DATA, AppError, require, short_text
 
-DEFAULTS={'primary':'codex','fallback':True,'codex_model':'','claude_model':'','codex_effort':'','timeout':90,'active_course':None}
+DEFAULT_ANSWER_INSTRUCTIONS = """帮我理解并回答作业问题。
+优先依据当前课程上传的 PPT、PDF 等资料，用自己的话概括，不要大段照抄；必要的专业术语、公式和选项文字可保留。
+只引用确实支持答案的资料。如果当前检索到的资料没有相关内容或依据不足，请明确说明，不要编造事实、出处或页码，也不要把推测当结论。
+补充通用知识时请单独标明；无法可靠判断时直接说不确定，并说明需要补充什么资料。"""
+
+DEFAULTS={'answer_instructions':DEFAULT_ANSWER_INSTRUCTIONS,'primary':'codex','fallback':True,'codex_model':'','claude_model':'','codex_effort':'','timeout':90,'active_course':None}
 
 class Store:
     def __init__(self, directory=DATA):
@@ -42,8 +47,12 @@ class Store:
         with self.db() as db: return {**DEFAULTS,**{r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM settings')}}
 
     def save_settings(self, values):
-        allowed={'primary','fallback','codex_model','claude_model','codex_effort','timeout'}
+        allowed={'primary','fallback','codex_model','claude_model','codex_effort','timeout','answer_instructions'}
         require(set(values)<=allowed,'不支持的设置字段。')
+        if 'answer_instructions' in values:
+            text=values['answer_instructions']
+            require(isinstance(text,str) and len(text)<=2000 and '\0' not in text,'回答要求必须是 2,000 字以内的文本。')
+            values={**values,'answer_instructions':text.strip() or DEFAULT_ANSWER_INSTRUCTIONS}
         if 'primary' in values: require(values['primary'] in ['codex','claude'],'主 Provider 无效。')
         if 'fallback' in values: require(isinstance(values['fallback'],bool),'备用开关无效。')
         if 'timeout' in values: require(type(values['timeout']) is int and 20<=values['timeout']<=180,'总超时须为 20–180 秒。')
@@ -58,7 +67,7 @@ class Store:
         with self.db() as db:
             courses=[dict(r) for r in db.execute('SELECT * FROM courses ORDER BY rowid')]
             documents=[{**dict(r),'warnings':json.loads(r['warnings'])} for r in db.execute('SELECT d.*,count(c.id) chunks FROM documents d LEFT JOIN chunks c ON c.document=d.id GROUP BY d.id ORDER BY d.created,d.rowid')]
-        return {'courses':courses,'documents':documents,'settings':self.settings()}
+        return {'courses':courses,'documents':documents,'settings':self.settings(),'defaults':{'answer_instructions':DEFAULT_ANSWER_INSTRUCTIONS}}
 
     def course_exists(self, course):
         with self.db() as db: require(db.execute('SELECT 1 FROM courses WHERE id=?',(course,)).fetchone() is not None,'课程不存在，请重新选择。')

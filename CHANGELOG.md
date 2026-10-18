@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Add editable answer instructions, saved locally and applied to both AI providers.
+- Default to course-first paraphrasing, supported citations and explicit uncertainty when evidence is insufficient.
+- Add a restore-default control and a 2,000-character limit.
+
 ## 0.2.0
 
 - Add native Windows installation, per-user Chrome/Edge/Chromium registration and an executable bridge launcher.
