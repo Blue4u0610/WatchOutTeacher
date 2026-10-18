@@ -13,14 +13,17 @@ from providers import CLIProvider, SCHEMA, cancellable_lock, classify, environme
 
 def command():
     """Resolve npm's JS entry point and invoke Node directly, including on Windows."""
-    node = locate('node')
+    # Also support absolute PATH entries from Node version managers and CI runtimes.
+    paths=environment()['PATH'].split(os.pathsep)+[p for p in os.environ.get('PATH','').split(os.pathsep) if Path(p).is_absolute()]
+    search=os.pathsep.join(dict.fromkeys(paths))
+    node = locate('node') or shutil.which('node.exe' if sys.platform=='win32' else 'node',path=search)
     if not node:
         return None
     roots = []
-    executable = shutil.which('gemini', path=environment()['PATH'])
+    executable = shutil.which('gemini', path=search)
     if executable:
         roots.extend(Path(executable).resolve().parents)
-    for directory in environment()['PATH'].split(os.pathsep):
+    for directory in paths:
         p = Path(directory)
         roots += [p/'node_modules/@google/gemini-cli', p.parent/'lib/node_modules/@google/gemini-cli']
     if os.environ.get('APPDATA'):
