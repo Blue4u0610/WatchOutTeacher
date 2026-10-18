@@ -13,7 +13,7 @@
 
 按住 **Alt（Windows）或 Option ⌥（macOS）** 划选网页上的问题，答案就出现在旁边。需要解释和出处时，点右下角的 **⌄**；需要复制时，直接选中文字。
 
-WatchOutTeacher 是一个运行在 **Windows / macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI** 或 **Claude Code** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
+WatchOutTeacher 是一个运行在 **Windows / macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI**、**Claude Code** 或 **Gemini CLI** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
 
 Star my repo pls, this is important./点个star吧 这很重要
 
@@ -30,7 +30,7 @@ Email:bluelan0610@outlook.com
 - **原地问答**：划选后显示答案，滚动页面也会保留；解释单独展开，文字可以复制。
 - **按课程查资料**：导入 PDF、PPTX、TXT、Markdown；引用标明文件及页码、幻灯片或文本片段。
 - **自己选模型和强度**：Codex 模型列表由本机 CLI 提供，支持自动或手动推理强度。
-- **可选备用服务**：首选服务失败后可尝试另一个，也可以关闭这个开关。
+- **可选备用服务**：首选失败后按顺序尝试勾选的服务，也可以关闭备用。升级不会自动启用 Gemini。
 - **按需授权网站**：从一个课程网站开始，或自行开启所有 HTTP / HTTPS 网站。
 
 <details>
@@ -51,7 +51,7 @@ Email:bluelan0610@outlook.com
 | Windows 11（原生环境） | [Windows：PowerShell 安装指南](docs/INSTALL.windows.md) | 左 Alt + 鼠标拖选 |
 | macOS | [macOS：终端安装指南](docs/INSTALL.macos.md) | Option ⌥ + 鼠标拖选 |
 
-两条路线都从 **安装并登录 Codex CLI 或 Claude Code** 开始，再安装 Python、下载项目和注册本地桥接。仅安装 ChatGPT / Claude 桌面应用还不够。Windows 请选择原生 CLI 安装器；只装在 WSL 里的 CLI 不会被本插件调用。
+两个系统都从 **安装并登录 Codex CLI、Claude Code 或 Gemini CLI** 开始，再安装 Python、下载项目和注册本地桥接。仅安装 ChatGPT / Claude 桌面应用还不够。Windows 的 Codex / Claude 请选择原生 CLI 安装器，Gemini 使用 Node.js + npm；只装在 WSL 里的 CLI 不会被本插件调用。
 
 这是本机扩展，不需要租服务器。Safari / Firefox 暂不支持，插件界面目前为中文。自动测试覆盖 macOS 与 Windows；真实 AI 账户调用的验证范围见[测试说明](docs/TESTING.md)。
 
@@ -124,7 +124,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
 - **手动**：显示所选模型支持的普通档位，例如 Low、Medium、High、XHigh、Max，并明确传给 CLI。
 - **自定义模型**：可以填完整模型 ID；实际支持情况由 CLI 校验。
 
-更高强度通常更慢、消耗更多，也不保证每题更准。Ultra 涉及自动任务分派，本插件暂不提供。Claude 使用其自身默认强度。模型列表会变化，点击“刷新模型列表”即可更新，不需要照抄 README 里的旧名单。
+更高强度通常更慢、消耗更多，也不保证每题更准。Ultra 涉及自动任务分派，本插件暂不提供。Claude 和 Gemini 使用各自默认强度。Gemini 提供 Auto / Pro / Flash / Flash-Lite 别名预设及自定义 ID，实际版本与权限以 CLI 和账户为准；暂不提供单独的 Gemini 强度选择。模型列表会变化，点击“刷新模型列表”即可更新，不需要照抄 README 里的旧名单。
 
 ### 回答要求（提示词）
 
@@ -141,7 +141,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
         ↓
 本机课程索引 → 取出相关片段
         ↓
-Codex CLI / Claude Code → 对应 AI 服务
+Codex CLI / Claude Code / Gemini CLI → 对应 AI 服务
         ↓
 答案 + 解释 + 来源 → 网页浮层
 ```
@@ -163,7 +163,7 @@ Codex CLI / Claude Code → 对应 AI 服务
 
 选区、题目上下文和检索片段会经 CLI 发往所选 AI 服务，因此**不是离线问答**。删除资料会删除本地索引，不会删除原文件。
 
-默认不保存题目和答案正文日志。诊断只记录服务、请求的模型与强度、错误类别、用时及检索数量。模型权限、订阅额度和服务费用以 CLI 所登录账户为准。
+桥接默认不保存题目和答案正文日志。Gemini CLI 会产生本地会话缓存，插件在正常结束后清理本次调用的缓存；强制退出、崩溃或 CLI 存储格式变化可能留下记录，项目路径登记会保留。各服务端的数据保留规则以对应账户条款为准。诊断只记录服务、请求的模型与强度、错误类别、用时及检索数量。模型权限、订阅额度和服务费用以 CLI 所登录账户为准。
 
 ## 更新与卸载
 
@@ -200,8 +200,8 @@ Windows：`py -3.12 scripts/install.py --uninstall`；macOS：`python3 scripts/i
 | 桥接连接断开 | 设置页点“重连 / 刷新资料”，刷新题目页再划选 |
 | 划词没反应 | 网站授权、页面刷新、鼠标按下前按住 Alt / Option；输入框内不触发，选区最多 8,000 字符 |
 | Canvas 内层题目没反应 | 题目可能来自另一个 iframe 域名；授权该域名，或自行选择所有网站授权 |
-| 认证或额度错误 | 终端运行 `codex login status`，或打开 `claude` 检查登录及账户提示 |
-| Windows 检测不到 CLI | 使用官方原生安装器，安装并登录后彻底退出并重开浏览器；不调用 WSL 或 npm 的 `.cmd` 包装器 |
+| 认证或额度错误 | 终端运行 `codex login status`，或打开 `claude` / `gemini` 检查登录及账户提示 |
+| Windows 检测不到 CLI | Codex / Claude 使用原生安装器，Gemini 安装 Node.js 与 npm 包；随后重启浏览器。不调用 WSL，Gemini 直接运行 Node 包入口 |
 | CLI 参数不兼容 | 更新 CLI 后重新检测；[已验证环境](docs/TESTING.md) 列出版本 |
 | 回答缺少选项或公式 | 补选完整题目；图片与不可提取公式目前不会传给模型 |
 | 资料没有被引用 | 检查导入警告、当前课程和本题检索数量；资料不足时可能使用通用知识 |
@@ -229,4 +229,4 @@ npm run test:live
 
 [架构](docs/ARCHITECTURE.md) · [测试说明](docs/TESTING.md) · [版本记录](CHANGELOG.md) · [贡献指南](CONTRIBUTING.md)
 
-本项目用于课程阅读与复习，请遵守课程对 AI 的使用要求。它与 OpenAI、Anthropic、Canvas 没有隶属关系。
+本项目用于课程阅读与复习，请遵守课程对 AI 的使用要求。它与 OpenAI、Anthropic、Google、Canvas 没有隶属关系。

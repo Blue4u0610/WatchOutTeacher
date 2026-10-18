@@ -35,7 +35,7 @@ MESSAGES = {
 def error(code): return AppError(code, MESSAGES[code])
 def classify(text):
     text = text.lower()
-    if any(x in text for x in ['unauthorized','authentication','not logged','login required','401','403','invalid api key']): return 'auth'
+    if any(x in text for x in ['unauthorized','authentication','not logged','login required','401','403','invalid api key','login with google','oauth','authentication method','auth method','auth type']): return 'auth'
     if any(x in text for x in ['rate limit','429','quota','usage limit','insufficient_quota','credit balance']): return 'rate_limit'
     return 'provider'
 
@@ -80,7 +80,7 @@ def locate(name):
             candidates.append((tuple(map(int,version.split('.'))),str(candidate)))
     return max(candidates)[1] if candidates else None
 
-def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024, memory_limit=None, allowed_exit_codes=(0,)):
+def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024, memory_limit=None, allowed_exit_codes=(0,), env_overrides=None):
     cancel = cancel or threading.Event()
     if cancel.is_set(): raise error('cancelled')
     start = time.monotonic()
@@ -88,7 +88,7 @@ def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024,
     with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr, tempfile.TemporaryFile() as stdin:
         stdin.write(prompt.encode()); stdin.seek(0)
         try:
-            p, job = start_process(args, cwd=cwd, env=environment(), stdin=stdin, stdout=stdout, stderr=stderr, memory_limit=memory_limit)
+            p, job = start_process(args, cwd=cwd, env={**environment(), **(env_overrides or {})}, stdin=stdin, stdout=stdout, stderr=stderr, memory_limit=memory_limit)
         except FileNotFoundError: raise error('not_installed')
         except OSError: raise error('provider')
         try:
@@ -254,15 +254,16 @@ def validate(result, sources):
     if result['basis']=='general_knowledge' and mapped: raise error('format')
     return {**result,'sources':mapped}
 
-def answer_with_fallback(providers, primary, fallback, prompt, models, cancel, budget, sources, efforts=None):
+def answer_with_fallback(providers, primary, fallback, prompt, models, cancel, budget, sources, efforts=None, fallback_providers=None):
     deadline=time.monotonic()+budget
-    order=[primary]+([n for n in providers if n != primary] if fallback else [])
+    backups=fallback_providers if fallback_providers is not None else ['codex','claude']
+    order=[primary]+([n for n in dict.fromkeys(backups) if n != primary and n in providers] if fallback else [])
     failures=[]
     for i,name in enumerate(order):
         if cancel.is_set(): raise error('cancelled')
         remaining=deadline-time.monotonic()
         if remaining<=0: failures.append((name,'timeout')); break
-        allowance=remaining*.65 if i==0 and len(order)>1 else remaining
+        allowance=remaining*.65 if i<len(order)-1 else remaining
         try:
             effort=(efforts or {}).get(name,'')
             kwargs={'effort':effort} if effort else {}

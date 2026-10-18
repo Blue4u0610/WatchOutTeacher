@@ -1,6 +1,6 @@
 # Testing
 
-Version **0.2.3** includes drag-and-drop imports, Claude Desktop CLI discovery, native Windows support and configurable answer instructions. The suite contains **40 Python tests** (two Windows-only tests are skipped on macOS), **44 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
+Version **0.3.0** adds Gemini CLI, model aliases and an explicit fallback-provider checklist. The suite contains **47 Python tests** (two Windows-only tests are skipped on macOS), **45 browser checks per platform**, a real Gemini CLI 0.64.0 offline configuration/policy smoke test, and an install/reinstall/uninstall smoke test. Browser checks use the real extension and Native Messaging host with mock answer providers; no AI credentials are supplied to CI. Live Gemini generation has not been verified: Google sign-in is still required on the development machine.
 
 ## Run locally
 
@@ -17,6 +17,9 @@ npm ci
 npx playwright install chromium
 npm test
 npm run test:browser
+# Optional local check; required in release CI:
+npm install -g @google/gemini-cli@0.64.0
+node scripts/python.mjs tests/gemini_cli_smoke.py
 ```
 
 The Node wrapper chooses `.venv/Scripts/python.exe` on Windows or `.venv/bin/python` on macOS. The macOS browser runner prefers the installed bridge interpreter when present, avoiding Documents privacy restrictions; install current requirements into that interpreter too when dependencies change. `COURSE_ASSIST_TEST_PYTHON` can select an explicit absolute interpreter path.
@@ -33,6 +36,7 @@ The browser runner creates a temporary profile, a unique Native Messaging host n
 | Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
 | Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation, index deletion, multi-file drops, invalid files, a 40 MB synthetic PPTX, further drops during a batch and drops outside the import area |
 | Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments, macOS desktop CLI discovery and login-state reporting |
+| Gemini | Direct Node discovery with spaces; streamed output/tool rejection; @file neutralization; scoped cache cleanup; Google-cache detection; course excerpts and preferences; explicit backups; real CLI settings merge and admin deny policy without a model request |
 | Settings | Persistent model/effort choices, answer instructions/default reset, catalog filtering and unsupported combinations |
 | Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
 | Lifecycle | Scroll/resize retention, stale-result suppression, navigation, course changes, disconnect/reconnect and reload |

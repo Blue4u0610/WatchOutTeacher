@@ -12,7 +12,7 @@
       ↓
   Store：当前课程、FTS5 最多 12 个片段
       ↓ 每题独立 prompt / 临时目录
-  CodexAdapter 或 ClaudeAdapter（串行主备）
+  Codex / Claude / Gemini 适配器（按已选列表串行主备）
       ↓ 严格 schema + 引用白名单
   source_id → 本地 document_id / 名称 / 文件页或幻灯片编号
       ↓ 当前 request ID 才允许显示
@@ -39,13 +39,13 @@ FTS5 是关键词检索，没有云向量数据库。最多使用前 48 个不�
 
 `answer(prompt, model, cancel, timeout, effort="")`：数组 argv + `shell=False`、stdin 输入、独立临时 cwd、最小环境变量集合。不会接收网页提供的 executable、工作路径、工具参数、API Key 或环境变量。模型设置限于名称格式。
 
-Codex 的限制选项经过本机 0.153.4 真实调用。Claude 的参数来自官方文档并在实际安装后检查 help；没有安装因此不能声称已验证其工具隔离与认证流程。两个适配器复用各自 CLI 的账户存储，不复制、不伪造认证。组织级受管理配置可能仍适用。
+Codex 的限制选项经过本机 0.153.4 真实调用。Claude 的参数来自官方文档并在实际安装后检查 help；没有安装因此不能声称已验证其工具隔离与认证流程。各适配器复用各自 CLI 的账户存储，不复制、不伪造认证。组织级受管理配置可能仍适用。
 
 调用的 stdout/stderr 放在临时文件，不写入 Native Messaging stdout。Codex 只读取 final message 文件；Claude 只接受 JSON `result` envelope 的 `structured_output`（或严格 JSON 的 result）。进度、工具事件、错误诊断不会被拼进答案。输出的字段、长度、枚举、布尔值和每个 source_id 都校验；引用标题/页码只能从当前发送片段的本地映射得到。
 
 引用校验验证的是“确实存在且确实发送过的来源”，不是自然语言推论的语义正确性。答案仍需要使用者核对。模型正常返回 insufficient 会直接显示，不作为后端故障。
 
-总预算采用 monotonic deadline；主用至多使用剩余时间 65%，备用使用剩余预算。全部失败保留每个 Provider 的错误类别。格式失败零额外修复调用，至多一次备用；不无限重试。主动取消不会备用。macOS 取消/超时先 SIGTERM，随后对整个独立子进程组 SIGKILL 并 wait。Windows 子进程以暂停状态创建，加入带 KILL_ON_JOB_CLOSE 的 Job Object 后才恢复；正常结束、取消及超时均关闭 job，清理后代进程，即使最初的父进程已退出。取消事件也参与能力检测和锁等待。宿主正常 EOF/SIGTERM 会取消活动请求并等待清理。
+总预算采用 monotonic deadline；还有后续服务时，本次最多使用剩余时间 65%，最后一个服务使用剩余预算。全部失败保留每个 Provider 的错误类别。格式失败零额外修复调用，只按勾选列表尝试备用，每个服务至多一次；不无限重试。主动取消不会备用。macOS 取消/超时先 SIGTERM，随后对整个独立子进程组 SIGKILL 并 wait。Windows 子进程以暂停状态创建，加入带 KILL_ON_JOB_CLOSE 的 Job Object 后才恢复；正常结束、取消及超时均关闭 job，清理后代进程，即使最初的父进程已退出。取消事件也参与能力检测和锁等待。宿主正常 EOF/SIGTERM 会取消活动请求并等待清理。
 
 ## UI 生命周期
 
@@ -75,6 +75,21 @@ Codex 的 `codex_effort` 设置默认空字符串（自动），持久化在 SQL
 
 原生 Windows 安装在 `%LOCALAPPDATA%\WatchOutTeacher`，macOS 沿用 `~/Library/Application Support/CourseAssist`。安装器创建隔离虚拟环境，通过 distlib 生成 Windows `.exe` 启动器，在 HKCU 的 Chrome / Edge / Chromium / Chrome for Testing NativeMessagingHosts 项注册绝对 manifest 路径。无管理员权限要求，扩展 ID 与消息宿主名不变。启动器只包含本地安装路径，不包含凭据。
 
-Windows CLI 搜索原生安装目录与绝对 PATH 项，只接受 `.exe`，不运行 npm 包装脚本或 WSL。继承登录所需的用户目录、系统目录和代理变量，不继承 API Key、PYTHONPATH 或 PYTHONHOME。宿主 stdio 使用二进制模式，文件与 CLI 输出明确使用 UTF-8。SQLite 事务结束显式关闭连接，避免 Windows 文件锁妨碍删除临时数据库。
+Windows 的 Codex / Claude 搜索原生安装目录与绝对 PATH 项，只接受 `.exe`。Gemini 查找 Node 与官方 npm 包入口，通过 argv 直接运行 `.js`；不运行 npm 包装脚本或 WSL。继承登录所需的用户目录、系统目录和代理变量，不继承 API Key、PYTHONPATH 或 PYTHONHOME。宿主 stdio 使用二进制模式，文件与 CLI 输出明确使用 UTF-8。SQLite 事务结束显式关闭连接，避免 Windows 文件锁妨碍删除临时数据库。
 
 浏览器测试为每次运行生成独立宿主名和临时注册表项，不覆盖日常安装；测试结束注销。生产安装器生命周期测试仅允许在一次性 CI 机器上运行。
+
+
+## Gemini CLI
+
+`GeminiProvider` 支持 0.64.0 起的所需参数，发布离线验证固定为 0.64.0。直接运行已安装的官方 npm 包入口，不使用 npx 下载。检测只检查版本、参数和 Google OAuth 缓存是否存在，不读取令牌，不把缓存存在描述为登录有效。
+
+每题使用独立临时目录的 workspace settings、空 `.gemini/.env`、专用 system prompt 和 admin 级工具拒绝策略。临时目录显式受信任，使 CLI 首次加载即应用配置。关闭 core tools、Hooks、Skills、Agents、自动记忆及工具发现命令；`--extensions none` 关闭扩展，MCP 允许列表使用每题随机生成的不存在的服务名，旧式 MCP server command 置空。发现系统级 settings/defaults/policies 时拒绝调用，避免覆盖组织策略。未来 CLI 或服务端管理配置变化仍可能影响行为，这不是完整 OS 沙箱。
+
+仅使用 `oauth-personal`；不继承 API Key、Vertex AI、Node 注入或自定义 Gemini home。题目通过 stdin 作为 JSON 字符串发送，`@` 转为 JSON Unicode 转义，防止 CLI 在推理前展开题目中的文件引用。每题新会话，不恢复聊天。
+
+只收集 stream-json 的 assistant message，要求成功 result；工具事件、错误、不完整流及无效 schema 均拒绝。模型别名是预设，不是账户权限列表；诊断记录请求值，不声称服务端确认的模型名称。Gemini 不继承 Codex 推理强度。
+
+CLI 会写会话缓存。进程结束后按 registry 和 `.project_root` 双重匹配，仅清理本次临时项目的 tmp/history；保留项目路径登记，避免与其他进程修改 registry 冲突。强制终止宿主、磁盘错误或存储格式变化可能留下记录。服务端保留以 Google 条款为准。
+
+升级时备用列表仍为 Codex / Claude，Gemini 不自动加入。用户勾选后才允许作为备用，执行时跳过首选；无备用勾选时只请求首选服务。

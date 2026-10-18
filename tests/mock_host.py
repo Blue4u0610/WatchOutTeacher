@@ -24,6 +24,6 @@ class Fake:
 class TestHost(RealHost):
     def __init__(self):
         Path(os.environ['COURSE_ASSIST_DATA']).parent.joinpath('host.pid').write_text(str(os.getpid()))
-        super().__init__(providers={'codex':Fake(),'claude':Fake()})
+        super().__init__(providers={'codex':Fake(),'claude':Fake(),'gemini':Fake()})
 host.Host=TestHost
 sys.exit(host.main())

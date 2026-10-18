@@ -4,6 +4,7 @@
 
 | 版本 / Version | 代码日期 / Snapshot date¹ | 系统 / Platforms | 主要变化 / Highlights |
 | --- | --- | --- | --- |
+| [v0.3.0](https://github.com/Blue4u0610/WatchOutTeacher/releases/tag/v0.3.0) | 2026-10-18 | Windows / macOS | Gemini CLI, model presets and selected backups / Gemini 模型预设与可选备用列表 |
 | [v0.2.3](https://github.com/Blue4u0610/WatchOutTeacher/releases/tag/v0.2.3) | 2026-10-18 | Windows / macOS | 100 MB 文件、批量队列、正式发布 / Larger files, batch queue and formal releases |
 | [v0.2.2](https://github.com/Blue4u0610/WatchOutTeacher/releases/tag/v0.2.2) | 2026-10-18 | Windows / macOS | 拖放导入、Claude CLI 检测 / Drag imports and Claude discovery |
 | [v0.2.1](https://github.com/Blue4u0610/WatchOutTeacher/releases/tag/v0.2.1) | 2026-10-17 | Windows / macOS | 自定义回答要求 / Custom answer instructions |
@@ -30,12 +31,12 @@ For updates, extract the new bundle, rerun the platform installer and reload `ex
 
 ```sh
 # macOS — replace the filename with your downloaded version
-shasum -a 256 WatchOutTeacher-v0.2.3.zip
+shasum -a 256 WatchOutTeacher-v0.3.0.zip
 ```
 
 ```powershell
 # Windows
-Get-FileHash .\WatchOutTeacher-v0.2.3.zip -Algorithm SHA256
+Get-FileHash .\WatchOutTeacher-v0.3.0.zip -Algorithm SHA256
 ```
 
 维护发布流程见 [RELEASING.md](RELEASING.md)。

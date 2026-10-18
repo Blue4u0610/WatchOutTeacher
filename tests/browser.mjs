@@ -72,6 +72,23 @@ try {
    await opts.reload();
    await waitFor(async()=> !(await opts.locator('#refresh-models').isDisabled()) && await opts.locator('#codex-model').inputValue()==='test-model');
    pass('CLI catalog dropdown persists selected model across reload');
+   assert.equal(await opts.locator('#fallback-gemini').isChecked(),false);
+   await opts.locator('#primary').selectOption('gemini');
+   await opts.locator('#gemini-model').selectOption('test-model');
+   await opts.locator('#fallback-claude').uncheck();
+   await opts.locator('#settings-form button:not([type="button"])').click();
+   await waitFor(async()=> (await rpc('state')).data.settings.primary==='gemini');
+   await opts.reload();
+   await waitFor(async()=> !(await opts.locator('#refresh-models').isDisabled()) && await opts.locator('#gemini-model').inputValue()==='test-model');
+   assert.equal(await opts.locator('#primary').inputValue(),'gemini');
+   assert.equal(await opts.locator('#fallback-gemini').isDisabled(),true);
+   assert.deepEqual((await rpc('state')).data.settings.fallback_providers,['codex']);
+   pass('Gemini provider/model and selected backups persist across reload');
+   await opts.locator('#primary').selectOption('codex');
+   await opts.locator('#fallback-claude').check();
+   await opts.locator('#settings-form button:not([type="button"])').click();
+   await waitFor(async()=> (await rpc('state')).data.settings.primary==='codex');
+
    assert.deepEqual(await opts.locator('#codex-effort option').evaluateAll(nodes=>nodes.map(n=>n.value)),['','low','medium','high']);
    await opts.locator('#codex-effort').selectOption('high');
    await opts.locator('#settings-form button:not([type="button"])').click();

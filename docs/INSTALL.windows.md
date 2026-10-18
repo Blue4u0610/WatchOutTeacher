@@ -43,9 +43,25 @@ claude
 
 完成首次登录。如果只安装 Claude Code，稍后在插件设置里把首选服务改为 Claude Code。该适配器已有参数与输出契约测试，真实 Claude 账户调用尚未验证。
 
-**请使用 Windows 原生 `.exe` 安装。** 本插件不会转到 WSL，也不会通过 shell 执行 npm 的 `.cmd` / `.ps1` 包装器。已经用 npm 装过 CLI 的用户，可以再安装官方原生版；检测页会显示实际选中的路径。只安装在 WSL 的账户登录不会自动变成 Windows 登录。
+**Codex / Claude 请使用 Windows 原生 `.exe` 安装。** 本插件不会转到 WSL，也不会通过 shell 执行 npm 的 `.cmd` / `.ps1` 包装器。已经用 npm 装过 CLI 的用户，可以再安装官方原生版；检测页会显示实际选中的路径。只安装在 WSL 的账户登录不会自动变成 Windows 登录。
 
 安装或更新 CLI 后，彻底退出并重新打开 Chrome / Edge，让浏览器拿到新的程序路径。插件不要求填写 API Key，也不改变桌面聊天窗口的模型设置。
+
+### 路线 C：Google 账户 + Gemini CLI
+
+先安装 [Node.js 22 LTS](https://nodejs.org/zh-cn/download)（Gemini CLI 要求 Node 20+），重新打开终端，然后运行：
+
+```sh
+npm install -g @google/gemini-cli@0.64.0
+gemini --version
+gemini
+```
+
+选择 **Login with Google**，由你本人完成浏览器登录。本次发布验证版本为 0.64.0；只打开 Gemini 网页或安装手机应用不够。Windows 若提示执行策略阻止 `npm.ps1`，安装时改用 `npm.cmd install -g @google/gemini-cli@0.64.0`，登录时运行 `gemini.cmd`。插件调用时会直接启动 Node 和 Gemini 包入口，不经过 PowerShell 包装脚本。
+
+重新加载插件，在设置页选择 **Gemini CLI**，选择自动 / Pro / Flash / Flash-Lite 或填写模型 ID，保存后对下一题生效。下拉选项是 CLI 模型别名预设，不代表账户已经有对应权限。备用列表只勾选你愿意使用其额度的服务；旧版升级不会自动开启 Gemini 备用。
+
+目前仅支持 **Google OAuth 登录**，不使用 API Key、Vertex AI 或服务账户认证。插件复用 CLI 认证，不读取或复制令牌。账户资格、地区、模型权限和额度以 Google 为准，见[官方登录说明](https://geminicli.com/docs/get-started/authentication/)与[额度说明](https://geminicli.com/docs/resources/quota-and-pricing/)。自动发布测试不包含真实 Gemini 账户回答。
 
 ## 2. 安装浏览器和 Python
 
@@ -57,7 +73,7 @@ claude
 py -3.12 --version
 ```
 
-如果没有 `py` 命令，但 `python --version` 显示的是刚安装的 Python，可以把本指南中的 `py -3.12` 换成 `python`。需要 Python 3.9+ 及 SQLite FTS5；推荐 3.12 以使用已有依赖的预编译包。日常使用无需 Node.js、Visual Studio 或编译工具。
+如果没有 `py` 命令，但 `python --version` 显示的是刚安装的 Python，可以把本指南中的 `py -3.12` 换成 `python`。需要 Python 3.9+ 及 SQLite FTS5；推荐 3.12 以使用已有依赖的预编译包。Codex / Claude 路线无需 Node.js、Visual Studio 或编译工具；Gemini CLI 需要 Node.js。
 
 ## 3. 下载项目
 

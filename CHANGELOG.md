@@ -8,6 +8,20 @@ Dates below identify the code snapshot in America/New_York. GitHub publication d
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-18
+
+### Added
+
+- Gemini CLI on Windows and macOS using Google OAuth, with Auto / Pro / Flash / Flash-Lite presets and custom model IDs.
+- A fallback-provider checklist: each service is opt-in; existing installations keep Codex / Claude defaults.
+- Streamed JSON validation, tool restrictions, isolated request configuration and scoped Gemini cache cleanup.
+- Bilingual Gemini setup in both OS guides, plus offline checks against Gemini CLI 0.64.0 in release CI.
+
+### Notes
+
+- Gemini reuses course retrieval, citations and saved answer instructions. It does not add OCR or a separate Gemini effort control.
+- Google sign-in and live-account generation remain user-side validation steps; automated checks use no AI credentials.
+
 
 ## [0.2.3] - 2026-10-18
 
@@ -80,9 +94,11 @@ Dates below identify the code snapshot in America/New_York. GitHub publication d
 - Initial macOS / Chromium extension and local Native Messaging bridge.
 - Course imports, SQLite retrieval, Codex adapter, optional Claude adapter and source references.
 
-[Unreleased]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.3.0...HEAD
 [0.1.5]: https://github.com/Blue4u0610/WatchOutTeacher/releases/tag/v0.1.5
 [0.2.0]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.1.5...v0.2.0
 [0.2.1]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.2.0...v0.2.1
 [0.2.2]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.2.1...v0.2.2
 [0.2.3]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.2.2...v0.2.3
+
+[0.3.0]: https://github.com/Blue4u0610/WatchOutTeacher/compare/v0.2.3...v0.3.0

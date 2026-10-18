@@ -10,7 +10,7 @@ DEFAULT_ANSWER_INSTRUCTIONS = """帮我理解并回答作业问题。
 只引用确实支持答案的资料。如果当前检索到的资料没有相关内容或依据不足，请明确说明，不要编造事实、出处或页码，也不要把推测当结论。
 补充通用知识时请单独标明；无法可靠判断时直接说不确定，并说明需要补充什么资料。"""
 
-DEFAULTS={'answer_instructions':DEFAULT_ANSWER_INSTRUCTIONS,'primary':'codex','fallback':True,'codex_model':'','claude_model':'','codex_effort':'','timeout':90,'active_course':None}
+DEFAULTS={'answer_instructions':DEFAULT_ANSWER_INSTRUCTIONS,'primary':'codex','fallback':True,'codex_model':'','claude_model':'','gemini_model':'','fallback_providers':['codex','claude'],'codex_effort':'','timeout':90,'active_course':None}
 
 class Store:
     def __init__(self, directory=DATA):
@@ -47,17 +47,20 @@ class Store:
         with self.db() as db: return {**DEFAULTS,**{r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM settings')}}
 
     def save_settings(self, values):
-        allowed={'primary','fallback','codex_model','claude_model','codex_effort','timeout','answer_instructions'}
+        allowed={'primary','fallback','codex_model','claude_model','gemini_model','fallback_providers','codex_effort','timeout','answer_instructions'}
         require(set(values)<=allowed,'不支持的设置字段。')
         if 'answer_instructions' in values:
             text=values['answer_instructions']
             require(isinstance(text,str) and len(text)<=2000 and '\0' not in text,'回答要求必须是 2,000 字以内的文本。')
             values={**values,'answer_instructions':text.strip() or DEFAULT_ANSWER_INSTRUCTIONS}
-        if 'primary' in values: require(values['primary'] in ['codex','claude'],'主 Provider 无效。')
+        if 'primary' in values: require(values['primary'] in ['codex','claude','gemini'],'主 Provider 无效。')
         if 'fallback' in values: require(isinstance(values['fallback'],bool),'备用开关无效。')
         if 'timeout' in values: require(type(values['timeout']) is int and 20<=values['timeout']<=180,'总超时须为 20–180 秒。')
         if 'codex_effort' in values: require(isinstance(values['codex_effort'],str) and values['codex_effort'] in ['', 'none','minimal','low','medium','high','xhigh','max'],'推理强度无效。')
-        for key in ['codex_model','claude_model']:
+        if 'fallback_providers' in values:
+            names=values['fallback_providers']
+            require(isinstance(names,list) and len(names)<=3 and all(isinstance(n,str) and n in ['codex','claude','gemini'] for n in names) and len(set(names))==len(names),'备用服务列表无效。')
+        for key in ['codex_model','claude_model','gemini_model']:
             if key in values: require(isinstance(values[key],str) and re.fullmatch(r'(?:[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,99})?',values[key]) is not None,'模型名称格式无效。')
         with self.db() as db:
             for key,value in values.items(): db.execute('INSERT OR REPLACE INTO settings VALUES(?,?)',(key,json.dumps(value)))

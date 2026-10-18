@@ -13,7 +13,7 @@
 
 Hold **Alt (Windows) or Option ⌥ (macOS)**, select a question on a webpage, and read the answer beside it. Click **⌄** for the explanation and sources. Select the answer text to copy it.
 
-WatchOutTeacher is a course companion for **Windows / macOS + Chrome / Edge / Chromium**. It calls your local **Codex CLI** or **Claude Code** and can use documents from the course you select. It never clicks an answer or submits an assignment. The final click is still yours.
+WatchOutTeacher is a course companion for **Windows / macOS + Chrome / Edge / Chromium**. It calls your local **Codex CLI**, **Claude Code** or **Gemini CLI** and can use documents from the course you select. It never clicks an answer or submits an assignment. The final click is still yours.
 
 [Install](#installation-from-zero) · [Use](#everyday-use) · [Documents and privacy](#documents-and-privacy) · [Troubleshoot](#troubleshooting) · [Develop](#development)
 
@@ -26,7 +26,7 @@ Releases include a versioned source bundle and SHA-256 checksum. One bundle supp
 - **Answers in place.** The card stays visible while you scroll. Explanations expand separately, so answer text remains selectable.
 - **Course-aware references.** Import PDF, PPTX, TXT and Markdown; citations identify the document and page, slide or text chunk.
 - **Your choice of model and effort.** Fetch the Codex model list from your CLI and select automatic or explicit reasoning effort.
-- **Optional fallback.** Try the other provider after the preferred one fails, or leave fallback off.
+- **Optional fallback.** Choose which providers may be tried after the preferred one fails, or leave fallback off. Upgrading does not automatically enable Gemini.
 - **Website permissions you choose.** Enable one course site or grant access to all HTTP / HTTPS sites.
 
 <details>
@@ -47,7 +47,7 @@ Choose your operating system, complete **steps 1–4** in its guide, then return
 | Windows 11 (native) | [Windows / PowerShell](docs/INSTALL.windows.en.md) | Left Alt + drag |
 | macOS | [macOS / Terminal](docs/INSTALL.macos.en.md) | Option ⌥ + drag |
 
-Both guides start with **installing and signing in to Codex CLI or Claude Code**, then cover Python, the download and the local bridge. Installing the ChatGPT or Claude desktop app alone is not enough. Use native CLI installers on Windows; this extension does not call CLIs installed only inside WSL.
+Both guides start with **installing and signing in to Codex CLI, Claude Code or Gemini CLI**, then cover Python, the download and the local bridge. Installing the ChatGPT or Claude desktop app alone is not enough. Use native installers for Codex / Claude and Node.js + npm for Gemini on Windows; this extension does not call CLIs installed only inside WSL.
 
 No server needed: GitHub hosts the source and your computer runs the bridge. Safari and Firefox are not supported. The UI is currently in Chinese. Automated tests cover macOS and Windows; see [testing](docs/TESTING.md) for the scope of real-account AI checks.
 
@@ -120,13 +120,15 @@ Select the model and effort **in this extension's settings**. Save to apply them
 - **Explicit:** choose a supported ordinary level such as Low, Medium, High, XHigh or Max; the adapter sends that value to the CLI.
 - **Custom model:** enter a full model ID; the CLI checks whether it can use it.
 
-Higher effort usually takes longer and uses more resources; it does not guarantee a better answer. Ultra includes automatic task delegation and is not offered here. Claude keeps its own default effort. Refresh the model list in settings instead of relying on a model list frozen in a README.
+Higher effort usually takes longer and uses more resources; it does not guarantee a better answer. Ultra includes automatic task delegation and is not offered here. Claude and Gemini keep their own default effort. Refresh the model list in settings instead of relying on a model list frozen in a README.
 
 ### Answer instructions
 
 In settings, open **回答要求** (“Answer instructions”) under **模型和操作**. Edit the text and save. The same instructions apply to future questions in all courses and to both providers. You can set language, length and how the answer should use course material; the limit is 2,000 characters. **恢复默认回答要求** fills the default text; save to apply it. Saving an empty field also restores the default.
 
 The default asks the model to prefer relevant PPT/PDF material, paraphrase instead of copying passages, cite only supporting sources, and clearly say when the retrieved excerpts are insufficient. Reliable general knowledge must be labelled separately; uncertain answers should ask for the missing information. These instructions travel with each question and are stored locally, not in diagnostic logs. They guide the model but do not guarantee factual accuracy; references still need checking.
+
+Gemini offers Auto / Pro / Flash / Flash-Lite aliases and custom model IDs. These are presets, not an account entitlement list; the CLI and Google determine actual model versions and access. Gemini has no separate reasoning-effort setting in this release.
 
 ## Documents and privacy
 
@@ -135,7 +137,7 @@ Selected text + question context
                 ↓
 Local course index → relevant excerpts
                 ↓
-Codex CLI / Claude Code → corresponding AI service
+Codex CLI / Claude Code / Gemini CLI → corresponding AI service
                 ↓
 Answer + explanation + references → page overlay
 ```
@@ -156,6 +158,8 @@ The local index lives at:
 - macOS: `~/Library/Application Support/CourseAssist/courses.sqlite3` (retained for existing installations)
 
  Selected text, question context and retrieved excerpts go to your chosen AI service through its CLI: **this is not offline inference**. Removing a document deletes its index, not the original file.
+
+Gemini CLI uses Google OAuth, with its own account quota. It records local sessions; the bridge cleans up the current request’s cache after normal completion. A crash, forced termination or CLI storage-format change may leave records; project-path registry metadata remains. Provider-side retention follows the account terms.
 
 Question and answer bodies are not kept in diagnostic logs. Diagnostics record the provider, requested model and effort, error category, duration and retrieval counts. Model access, subscriptions and service charges follow the account signed in to the CLI.
 
@@ -195,7 +199,7 @@ Remove the extension from the browser. Course data is retained. To remove it too
 | No response to selection | Check site access, refresh, hold Alt / Option before pressing the mouse; editable fields are excluded and selections are limited to 8,000 characters |
 | Canvas embedded questions do not respond | Authorize the question iframe's own domain or choose all-site access |
 | Authentication or quota error | Run `codex login status`, or open `claude` and follow the account prompts |
-| Windows cannot find the CLI | Use the official native installer and restart the browser after sign-in; WSL and npm `.cmd` wrappers are not invoked |
+| Windows cannot find the CLI | Use native installers for Codex / Claude, Node.js + npm for Gemini, then restart the browser; Gemini runs its Node entry point without a shell |
 | Unsupported CLI flags | Update the CLI and check again; see [tested versions](docs/TESTING.md) |
 | Missing options or formulas | Select the complete question; images and unreadable formulas are not sent |
 | No course reference | Check import warnings, the selected course and retrieval counts; insufficient material may lead to a general-knowledge answer |
@@ -223,4 +227,4 @@ npm run test:live
 
 [Architecture](docs/ARCHITECTURE.md) · [Testing](docs/TESTING.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
-Use this for course reading and revision within your course's AI rules. WatchOutTeacher is not affiliated with OpenAI, Anthropic or Canvas.
+Use this for course reading and revision within your course's AI rules. WatchOutTeacher is not affiliated with OpenAI, Anthropic, Google or Canvas.

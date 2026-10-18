@@ -33,6 +33,10 @@ jobs:
         run: |
           python -m venv .venv
           node scripts/python.mjs -m pip install -r requirements.txt
+      - name: Verify Gemini CLI isolation (offline)
+        run: |
+          npm install -g @google/gemini-cli@0.64.0
+          node scripts/python.mjs tests/gemini_cli_smoke.py
       - run: npm ci
       - run: npx playwright install chromium
       - name: Installer lifecycle

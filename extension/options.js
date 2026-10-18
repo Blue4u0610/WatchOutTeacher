@@ -9,7 +9,14 @@ async function platformLabels() {
   $('gesture').options[0].textContent=modifierLabel;
   $('gesture').options[1].textContent=modifierLabel+' + Shift';
 }
-const catalogs = {codex:[],claude:[]};
+const providerNames=['codex','claude','gemini'];
+const catalogs = {codex:[],claude:[],gemini:[]};
+function fallbackPicker() {
+  for(const name of providerNames) {
+    const input=$('fallback-'+name);
+    input.disabled=!$('fallback').checked || $('primary').value===name;
+  }
+}
 const effortLabels={none:'无额外推理（none）',minimal:'最低（minimal）',low:'低（low）',medium:'中等（medium）',high:'高（high）',xhigh:'很高（xhigh）',max:'最高（max）'};
 function effortPicker(value=$('codex-effort').value) {
   const model=catalogs.codex.find(m=>m.id===modelValue('codex'));
@@ -47,7 +54,7 @@ function modelPicker(provider,value,custom=false) {
 async function refreshModels() {
   $('refresh-models').disabled=true;
   try {
-    await Promise.all(['codex','claude'].map(async provider=>{
+    await Promise.all(providerNames.map(async provider=>{
       const note=$(provider+'-model-status'); note.textContent='正在读取模型列表…';
       try {
         const result=await rpc('models',{provider});
@@ -91,10 +98,12 @@ async function act(fn) { try { await fn(); } catch(e) { status(e.message,true); 
 async function refresh() {
   render(await rpc('state'));
   $('primary').value=state.settings.primary; $('fallback').checked=state.settings.fallback;
+  for(const name of providerNames) $('fallback-'+name).checked=(state.settings.fallback_providers || ['codex','claude']).includes(name);
+  fallbackPicker();
   $('timeout').value=state.settings.timeout;
   $('answer-instructions').value=state.settings.answer_instructions || '';
   $('reset-instructions').disabled=!state.defaults?.answer_instructions;
-  for(const provider of ['codex','claude']) modelPicker(provider,state.settings[provider+'_model']);
+  for(const provider of providerNames) modelPicker(provider,state.settings[provider+'_model']);
   effortPicker(state.settings.codex_effort || '');
   const p=await chrome.storage.local.get(['gesture','theme']); $('gesture').value=p.gesture || 'alt'; $('theme').value=p.theme || 'auto';
   status('本地桥接已连接。');
@@ -149,7 +158,7 @@ $('reset-instructions').onclick=()=>{
   status('已填入默认回答要求，点击“保存设置”后生效。');
 };
 $('settings-form').onsubmit=e=>{e.preventDefault();act(async()=>{
-  await rpc('settings',{primary:$('primary').value,fallback:$('fallback').checked,timeout:Number($('timeout').value),answer_instructions:$('answer-instructions').value,codex_model:modelValue('codex'),claude_model:modelValue('claude'),codex_effort:$('codex-effort').value});
+  await rpc('settings',{primary:$('primary').value,fallback:$('fallback').checked,timeout:Number($('timeout').value),answer_instructions:$('answer-instructions').value,codex_model:modelValue('codex'),claude_model:modelValue('claude'),gemini_model:modelValue('gemini'),fallback_providers:providerNames.filter(name=>$('fallback-'+name).checked),codex_effort:$('codex-effort').value});
   await chrome.storage.local.set({gesture:$('gesture').value,theme:$('theme').value}); status('设置已保存。');
 });};
 function uploadControls() {
@@ -253,7 +262,9 @@ $('check').onclick=()=>act(async()=>{
     status('检测完成。真实调用状态请在题目浮层或最近诊断中查看。');
   } finally { $('check').disabled=false; }
 });
-for(const provider of ['codex','claude']) $(provider+'-model').onchange=()=>{customVisibility(provider);if(provider==='codex')effortPicker();};
+for(const provider of providerNames) $(provider+'-model').onchange=()=>{customVisibility(provider);if(provider==='codex')effortPicker();};
+$('primary').onchange=fallbackPicker;
+$('fallback').onchange=fallbackPicker;
 $('codex-model-custom').oninput=()=>effortPicker();
 $('codex-effort').onchange=()=>effortPicker();
 $('refresh-models').onclick=()=>void refreshModels();
