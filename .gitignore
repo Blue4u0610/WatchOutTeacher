@@ -16,3 +16,4 @@ test-results/
 *.log
 coverage/
 playwright-report/
+dist/

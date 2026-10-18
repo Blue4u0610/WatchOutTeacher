@@ -6,11 +6,20 @@
 <p align="center">One less tab. One more look at the source.</p>
 <p align="center"><a href="README.md">中文</a> · <strong>English</strong></p>
 
+<p align="center">
+  <a href="https://github.com/Blue4u0610/WatchOutTeacher/releases/latest"><img src="https://img.shields.io/github/v/release/Blue4u0610/WatchOutTeacher" alt="Latest release"></a>
+  <a href="https://github.com/Blue4u0610/WatchOutTeacher/actions/workflows/test.yml"><img src="https://github.com/Blue4u0610/WatchOutTeacher/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+</p>
+
 Hold **Alt (Windows) or Option ⌥ (macOS)**, select a question on a webpage, and read the answer beside it. Click **⌄** for the explanation and sources. Select the answer text to copy it.
 
 WatchOutTeacher is a course companion for **Windows / macOS + Chrome / Edge / Chromium**. It calls your local **Codex CLI** or **Claude Code** and can use documents from the course you select. It never clicks an answer or submits an assignment. The final click is still yours.
 
 [Install](#installation-from-zero) · [Use](#everyday-use) · [Documents and privacy](#documents-and-privacy) · [Troubleshoot](#troubleshooting) · [Develop](#development)
+
+[Download latest release](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) · [Version history](docs/VERSIONS.md) · [Changelog](CHANGELOG.md)
+
+Releases include a versioned source bundle and SHA-256 checksum. One bundle supports both Windows and macOS; use the matching installation guide. `main` is the development branch.
 
 ## What it does
 

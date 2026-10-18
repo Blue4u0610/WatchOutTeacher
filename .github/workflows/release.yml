@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate version and build committed source bundle
+        run: python scripts/release.py --tag "$GITHUB_REF_NAME"
+      - name: Publish release with downloads and checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" --json isDraft > /tmp/release.json 2>/dev/null; then
+            python -c 'import json; assert json.load(open("/tmp/release.json"))["isDraft"], "Published releases must not be overwritten"'
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --draft --title "WatchOutTeacher $GITHUB_REF_NAME" --notes-file dist/release-notes.md
+          fi
+          gh release upload "$GITHUB_REF_NAME" "dist/WatchOutTeacher-$GITHUB_REF_NAME.zip" dist/SHA256SUMS.txt --clobber
+          gh release edit "$GITHUB_REF_NAME" --draft=false --latest --notes-file dist/release-notes.md

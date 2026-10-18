@@ -61,7 +61,7 @@ py -3.12 --version
 
 ## 3. 下载项目
 
-在仓库首页点击 **Code → Download ZIP**。右键压缩包，选择 **全部解压**，将项目放到准备长期保留的文件夹，例如 `C:\Users\你的用户名\Projects\WatchOutTeacher`。不要直接在压缩包预览里操作。
+在 [最新版本](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) 页面的 **Assets** 下载 `WatchOutTeacher-v版本号.zip`。右键压缩包，选择 **全部解压**，将项目放到准备长期保留的文件夹，例如 `C:\Users\你的用户名\Projects\WatchOutTeacher`。不要直接在压缩包预览里操作。
 
 在解压后的项目文件夹中右键选择 **在终端中打开**，确认其中有 `README.md`、`scripts` 和 `extension`。也可以在 PowerShell 中输入：
 

@@ -61,7 +61,7 @@ python3 --version
 
 ## 3. 下载项目
 
-在仓库首页点击 **Code → Download ZIP**，解压到准备长期保留的位置。终端输入 `cd `（末尾留一个空格），把解压后的项目文件夹拖进终端，再按回车。
+在 [最新版本](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) 页面的 **Assets** 下载 `WatchOutTeacher-v版本号.zip`，解压到准备长期保留的位置。终端输入 `cd `（末尾留一个空格），把解压后的项目文件夹拖进终端，再按回车。
 
 熟悉 Git 的话，也可以：
 

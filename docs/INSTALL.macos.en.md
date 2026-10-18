@@ -61,6 +61,8 @@ Node.js and Xcode are not needed for everyday use. The initial dependency instal
 
 ## 3. Download the project
 
+For a tested release, download `WatchOutTeacher-vVERSION.zip` from **Assets** on the [latest release](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) page. The repository’s **Code → Download ZIP** button and a default Git clone track ongoing development on `main`.
+
 Choose **Code → Download ZIP** on this repository and extract it somewhere you intend to keep. In Terminal, type `cd ` with a trailing space, drag the extracted folder into the window, and press Return.
 
 If you use Git:

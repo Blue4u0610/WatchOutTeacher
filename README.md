@@ -6,6 +6,11 @@
 <p align="center">Created by Blue</p>
 <p align="center"><strong>中文</strong> · <a href="README.en.md">English</a></p>
 
+<p align="center">
+  <a href="https://github.com/Blue4u0610/WatchOutTeacher/releases/latest"><img src="https://img.shields.io/github/v/release/Blue4u0610/WatchOutTeacher" alt="Latest release"></a>
+  <a href="https://github.com/Blue4u0610/WatchOutTeacher/actions/workflows/test.yml"><img src="https://github.com/Blue4u0610/WatchOutTeacher/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+</p>
+
 按住 **Alt（Windows）或 Option ⌥（macOS）** 划选网页上的问题，答案就出现在旁边。需要解释和出处时，点右下角的 **⌄**；需要复制时，直接选中文字。
 
 WatchOutTeacher 是一个运行在 **Windows / macOS + Chrome / Edge / Chromium** 上的课程辅助扩展，通过本机 **Codex CLI** 或 **Claude Code** 回答问题。可以导入自己的课件，让回答参考当前课程资料。它不会替你点击选项或提交作业——鼠标的最后一票，还是你的。
@@ -15,6 +20,10 @@ Star my repo pls, this is important./点个star吧 这很重要
 Email:bluelan0610@outlook.com
 
 [安装](#安装从零开始) · [使用](#日常使用) · [资料与隐私](#资料怎么用数据去哪儿) · [排障](#遇到问题) · [开发](#开发与测试)
+
+[下载最新版本](https://github.com/Blue4u0610/WatchOutTeacher/releases/latest) · [版本历史](docs/VERSIONS.md) · [更新日志](CHANGELOG.md)
+
+正式版本提供带版本号的源码包和 SHA-256 校验值。Windows / macOS 使用同一个包，按各自指南安装；`main` 分支是开发中的代码。
 
 ## 能做什么
 
