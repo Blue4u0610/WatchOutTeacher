@@ -66,6 +66,8 @@ Email:bluelan0610@outlook.com
 
 安装检测不会生成答案，也不代表账户一定还有额度。下一步用一个小问题检查实际调用。
 
+macOS 上也会检测 Claude 桌面应用内置的 Claude Code。桌面应用登录与 CLI 认证可能不同；在“检测 CLI”里确认登录状态，未登录时需在终端运行检测结果中的可执行文件并加上 `auth login`。
+
 ### 7. 试一道题，再导入课件
 
 在获授权的网页上，按住 **左 Alt（Windows）或 Option ⌥（macOS）**，从文字处按下鼠标左键并拖选题干和选项。松开后，等待答案出现。
@@ -86,7 +88,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
 
 授权 `http://localhost:8765`，打开 [本地演示页](http://localhost:8765/fixture.html)，划选第一道 `2 + 2`。**这会实际调用你的 CLI，使用对应账户的额度。** 测完按 `Ctrl+C` 关闭演示服务器；日常使用不需要它。
 
-然后在设置页创建课程，选择 PDF、PPTX、TXT 或 MD 文件，等到显示“已导入”。可以先导入仓库里的 `tests/material.md`，再划选演示页第二题；资料把虚构 Lumen 协议的就绪颜色定义为 Violet，引用应指向这份文件。
+然后在设置页创建课程，把 PDF、PPTX、TXT 或 MD 文件拖入资料区（支持多个），或点击选择文件，等到显示“已导入”。可以先导入仓库里的 `tests/material.md`，再划选演示页第二题；资料把虚构 Lumen 协议的就绪颜色定义为 Violet，引用应指向这份文件。
 
 ## 日常使用
 

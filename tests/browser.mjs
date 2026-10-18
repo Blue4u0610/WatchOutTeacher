@@ -118,6 +118,41 @@ try {
  await opts.locator('#files').setInputFiles(live ? [path.join(resultDir,'material.pdf'),path.join(resultDir,'material.pptx')] : path.join(root,'tests/material.md'));
  await waitFor(async()=> (await opts.locator('#status').textContent()).includes('资料已导入'));
  pass('settings UI course creation + chunked document import');
+ if(!live){
+   async function dropFiles(files,target='#drop-zone') {
+     const transfer=await opts.evaluateHandle(files=>{const d=new DataTransfer();for(const f of files)d.items.add(new File([f.text],f.name));return d;},files);
+     await opts.locator(target).dispatchEvent('dragenter',{dataTransfer:transfer});
+     if(target==='#drop-zone')assert((await opts.locator(target).getAttribute('class')).includes('drag-over'));
+     await opts.locator(target).dispatchEvent('drop',{dataTransfer:transfer});
+     await transfer.dispose();
+   }
+   const docsBefore=(await rpc('state')).data.documents.length;
+   await dropFiles([{name:'拖放讲义.txt',text:'Course notes: review your materials.'},{name:'drop-notes.md',text:'# Notes\nRead the instructions.'}]);
+   assert.equal(await opts.locator('#files').isDisabled(),true);
+   await waitFor(async()=> (await opts.locator('#status').textContent()).includes('资料已导入'));
+   assert.equal((await rpc('state')).data.documents.length,docsBefore+2);
+   assert.equal(await opts.locator('#files').isDisabled(),false);
+   pass('multi-file drag import indexes documents and restores controls');
+   await dropFiles([{name:'invalid.exe',text:'not supported'},{name:'empty.txt',text:''},{name:'valid.txt',text:'Valid course notes.'}]);
+   await waitFor(async()=> (await opts.locator('#status').textContent()).includes('文件为空'));
+   assert.equal((await rpc('state')).data.documents.length,docsBefore+3);
+   assert((await opts.locator('#status').textContent()).includes('不支持此格式'));
+   pass('invalid dropped files report errors while valid files still import');
+   await dropFiles([{name:'outside.txt',text:'outside'}],'h1');
+   assert((await opts.locator('#status').textContent()).includes('导入区域'));
+   assert.equal((await rpc('state')).data.documents.length,docsBefore+3);
+   pass('dropping outside import area prevents navigation and import');
+   const activeCourse=(await rpc('state')).data.settings.active_course;
+   await opts.locator('#courses').selectOption('');
+   await waitFor(async()=> (await rpc('state')).data.settings.active_course===null);
+   await opts.locator('#drop-zone').evaluate(el=>{const d=new DataTransfer();d.items.add(new File(['notes'],'no-course.txt'));el.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:d}));});
+   assert((await opts.locator('#status').textContent()).includes('请先选择课程'));
+   assert.equal((await rpc('state')).data.documents.length,docsBefore+3);
+   await opts.locator('#courses').selectOption(activeCourse);
+   await waitFor(async()=> (await rpc('state')).data.settings.active_course===activeCourse);
+   pass('drop requires a selected course');
+ }
+
  const page=await context.newPage();await page.goto(`http://localhost:${port}/fixture.html`);
  const session=await context.newCDPSession(page);
  async function cardText() {

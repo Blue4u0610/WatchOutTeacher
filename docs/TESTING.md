@@ -1,6 +1,6 @@
 # Testing
 
-Version **0.2.1** includes native Windows support and configurable answer instructions. The suite contains **37 Python tests** (two Windows-only tests are skipped on macOS), **38 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
+Version **0.2.2** includes drag-and-drop imports, Claude Desktop CLI discovery, native Windows support and configurable answer instructions. The suite contains **39 Python tests** (two Windows-only tests are skipped on macOS), **42 browser checks per platform**, and a separate install/reinstall/uninstall smoke test. Browser checks run the real extension and Native Messaging host with a mock answer provider; they do not call paid AI services.
 
 ## Run locally
 
@@ -31,8 +31,8 @@ The browser runner creates a temporary profile, a unique Native Messaging host n
 | --- | --- |
 | Local bridge | Binary message framing, caller identity, Unicode paths/stdio, chunked imports, CLI argument quoting, cancellation/timeouts and descendant cleanup |
 | Windows | Native `.exe` launcher, per-user registry lifecycle, native-only CLI lookup and Job Object memory limits |
-| Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation and index deletion |
-| Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments |
+| Documents | PDF pages, PPTX slides, text parsing, encrypted/scanned/corrupt files, course isolation, index deletion, multi-file drops, invalid files and drops outside the import area |
+| Providers | Output schema, citation allowlist, error classification, fallback isolation and reasoning-effort arguments, macOS desktop CLI discovery and login-state reporting |
 | Settings | Persistent model/effort choices, answer instructions/default reset, catalog filtering and unsupported combinations |
 | Browser | Alt / Option selection, platform-specific labels, editable-field exclusion, independent expand button, selectable answer text and outside-click dismissal |
 | Lifecycle | Scroll/resize retention, stale-result suppression, navigation, course changes, disconnect/reconnect and reload |

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- Drag multiple course files into the import area, with per-file validation and upload feedback.
+- Detect the native Claude Code bundled with Claude Desktop on macOS and report CLI login status.
+
 ## 0.2.1
 
 - Add editable answer instructions, saved locally and applied to both AI providers.

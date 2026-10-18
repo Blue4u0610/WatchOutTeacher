@@ -62,6 +62,8 @@ No server needed: GitHub hosts the source and your computer runs the bridge. Saf
 
 The installation check does not generate an answer or prove that the account has remaining quota. Try a small question next.
 
+On macOS, detection also checks the Claude Code bundled with Claude Desktop. Desktop sign-in may not authenticate the CLI. Check **检测 CLI**; if it reports signed out, run the detected executable in Terminal with `auth login`.
+
 ### 7. Ask a question, then add your notes
 
 On an authorized webpage, hold **left Alt (Windows) or Option ⌥ (macOS)**, press the left mouse button over text, and drag across the question and its options. Release the mouse and wait for the answer.
@@ -82,7 +84,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory tests
 
 Authorize `http://localhost:8765`, open the [local demo](http://localhost:8765/fixture.html), and select the first `2 + 2` question. **This makes a real CLI request and uses your account's allowance.** Press `Ctrl+C` when finished; the demo server is not needed for everyday use.
 
-Next, create a course in settings and import PDF, PPTX, TXT or MD files. Wait for **已导入** (“Imported”). To test references, import `tests/material.md` and select the second demo question. The file defines Violet as the fictional Lumen protocol's ready color; the reference should point to that file.
+Next, create a course in settings and drag PDF, PPTX, TXT or MD files into the import area, or use the file picker. Multiple files are supported. Wait for **已导入** (“Imported”). To test references, import `tests/material.md` and select the second demo question. The file defines Violet as the fictional Lumen protocol's ready color; the reference should point to that file.
 
 ## Everyday use
 

@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
 let state, deleting;
+let uploading=false, dragDepth=0;
 let modifierLabel='Alt / Option';
 async function platformLabels() {
   const {os}=await chrome.runtime.getPlatformInfo();
@@ -74,7 +75,7 @@ function render(next) {
   for(const c of state.courses) select.add(new Option(c.name,c.id));
   select.value=state.settings.active_course || '';
   $('rename').disabled=$('delete-course').disabled=!select.value;
-  $('files').disabled=!select.value;
+  uploadControls();
   $('documents').replaceChildren();
   for(const d of state.documents.filter(d=>d.course===select.value)) {
     const row=document.createElement('div'); row.className='document'; $('documents').append(row);
@@ -151,14 +152,25 @@ $('settings-form').onsubmit=e=>{e.preventDefault();act(async()=>{
   await rpc('settings',{primary:$('primary').value,fallback:$('fallback').checked,timeout:Number($('timeout').value),answer_instructions:$('answer-instructions').value,codex_model:modelValue('codex'),claude_model:modelValue('claude'),codex_effort:$('codex-effort').value});
   await chrome.storage.local.set({gesture:$('gesture').value,theme:$('theme').value}); status('设置已保存。');
 });};
-$('files').onchange=()=>act(async()=>{
-  const course=state.settings.active_course; if(!course)throw new Error('请先选择课程。');
-  const files=[...$('files').files]; $('files').disabled=true; $('progress').hidden=false;
+function uploadControls() {
+  const disabled=uploading || !state?.settings.active_course;
+  $('files').disabled=disabled;
+  $('drop-zone').setAttribute('aria-disabled',String(disabled));
+  $('drop-zone').setAttribute('aria-busy',String(uploading));
+  $('drop-hint').textContent=uploading?'正在导入，请稍候…':disabled?'请先选择或创建课程。':'支持一次拖入多个文件；PDF、PPTX、TXT、MD，每个最多 30 MB。';
+}
+async function importFiles(files) {
+  if(uploading)throw new Error('正在导入资料，请完成后再添加。');
+  const course=state?.settings.active_course; if(!course)throw new Error('请先选择课程。');
+  if(!files.length)throw new Error('请拖入文件，暂不支持文件夹或网页链接。');
+  uploading=true; uploadControls(); $('progress').hidden=false;
   const errors=[];
   try {
     for(const file of files) {
       let token;
       try {
+        if(!/\.(pdf|pptx|txt|md)$/i.test(file.name))throw new Error('不支持此格式。支持 PDF、PPTX、TXT、MD。');
+        if(!file.size || file.size>30*1024*1024)throw new Error('文件为空或超过 30 MB。');
         status(`正在上传 ${file.name}…`); $('progress').value=0;
         token=(await rpc('upload_begin',{course,name:file.name,size:file.size})).token;
         for(let offset=0;offset<file.size;offset+=192*1024) {
@@ -175,8 +187,35 @@ $('files').onchange=()=>act(async()=>{
     }
     render(await rpc('state'));
     status(errors.length?errors.join('\n'):'资料已导入。重新划词即可使用当前课程资料。',!!errors.length);
-  } finally { $('files').value=''; $('files').disabled=!state.settings.active_course; $('progress').hidden=true; }
+  } finally { uploading=false; $('files').value=''; uploadControls(); $('progress').hidden=true; }
+}
+$('files').onchange=()=>{const files=[...$('files').files]; if(files.length)void act(()=>importFiles(files));};
+const dropZone=$('drop-zone');
+const hasFiles=e=>Array.from(e.dataTransfer?.types || []).includes('Files');
+function clearDrag(){dragDepth=0;dropZone.classList.remove('drag-over');}
+dropZone.addEventListener('dragenter',e=>{
+  if(!hasFiles(e))return;
+  e.preventDefault(); dragDepth++;
+  if(!uploading && state?.settings.active_course)dropZone.classList.add('drag-over');
 });
+dropZone.addEventListener('dragover',e=>{
+  if(!hasFiles(e))return;
+  e.preventDefault(); e.dataTransfer.dropEffect=uploading || !state?.settings.active_course?'none':'copy';
+});
+dropZone.addEventListener('dragleave',e=>{if(hasFiles(e) && --dragDepth<=0)clearDrag();});
+dropZone.addEventListener('drop',e=>{
+  e.preventDefault(); clearDrag();
+  const items=Array.from(e.dataTransfer?.items || []);
+  if(items.some(item=>item.webkitGetAsEntry?.()?.isDirectory)){
+    status('暂不支持拖入文件夹，请打开文件夹后选择其中的资料。',true); return;
+  }
+  const files=Array.from(e.dataTransfer?.files || []);
+  void act(()=>importFiles(files));
+});
+// Prevent dropped files outside the import area from replacing the settings page.
+document.addEventListener('dragover',e=>{if(hasFiles(e)){e.preventDefault();if(!dropZone.contains(e.target))e.dataTransfer.dropEffect='none';}});
+document.addEventListener('drop',e=>{if(hasFiles(e)){e.preventDefault();clearDrag();if(!dropZone.contains(e.target))status('请把文件拖到“课程资料”的导入区域。',true);}});
+window.addEventListener('blur',clearDrag);
 $('check').onclick=()=>act(async()=>{
   $('check').disabled=true; status('正在检测 CLI 的安装、参数能力与登录状态…');
   try {

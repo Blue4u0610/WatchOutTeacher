@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'bridge'))
 from common import AppError, data_directory
 from host import encode_frame, read_frame, extension_origin
 from native_setup import create_launcher, write_manifest, register_windows, unregister_windows, WINDOWS_BROWSERS, registry_key
-from providers import environment, locate, run
+from providers import environment, locate, run, CLIProvider
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,6 +30,29 @@ class PlatformTests(unittest.TestCase):
             self.assertEqual(env['USERPROFILE'], os.environ['USERPROFILE'])
             self.assertEqual(env['SystemRoot'], os.environ['SystemRoot'])
             self.assertEqual(data_directory().parent, Path(os.environ['LOCALAPPDATA']))
+
+    def test_mac_desktop_claude_discovery_prefers_path_then_newest_native_version(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            root = home/'Library/Application Support/Claude/claude-code'
+            for version in ['2.1.9','2.1.299','preview']:
+                exe = root/version/'hash/claude.app/Contents/MacOS/claude'
+                exe.parent.mkdir(parents=True); exe.write_text('test'); exe.chmod(0o700)
+            with patch('providers.sys.platform','darwin'), patch('providers.Path.home',return_value=home), patch('providers.shutil.which',return_value=None):
+                self.assertIn('/2.1.299/',locate('claude'))
+                self.assertIsNone(locate('codex'))
+                with patch('providers.shutil.which',return_value='/trusted/claude'):
+                    self.assertEqual(locate('claude'),'/trusted/claude')
+
+    def test_claude_detection_reports_authentication_without_account_details(self):
+        flags = '--print --output-format --json-schema --tools --no-session-persistence --strict-mcp-config --setting-sources --settings --model --disable-slash-commands --no-chrome --safe-mode'
+        for logged_in in [True,False]:
+            with patch('providers.locate',return_value='/trusted/claude'), patch('providers.run',side_effect=['2.1.299',flags,json.dumps({'loggedIn':logged_in,'email':'private@example.com'})]):
+                status = CLIProvider('claude').detect()
+                self.assertEqual(status['available'],logged_in)
+                self.assertEqual(status['code'],'ready' if logged_in else 'auth')
+                self.assertEqual(status['version'],'2.1.299')
+                self.assertNotIn('private@example.com',json.dumps(status))
 
     def test_unicode_stdin_stdout_and_path_with_spaces(self):
         with tempfile.TemporaryDirectory(prefix='课程 space ') as directory:

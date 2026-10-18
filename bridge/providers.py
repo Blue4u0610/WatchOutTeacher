@@ -69,9 +69,18 @@ def locate(name):
             candidate = Path(directory)/(name+'.exe')
             if candidate.is_file(): return str(candidate)
         return None
-    return shutil.which(name, path=environment()['PATH'])
+    found = shutil.which(name, path=environment()['PATH'])
+    if found or name != 'claude' or sys.platform != 'darwin': return found
+    # Claude Desktop bundles a versioned native CLI outside the shell PATH.
+    root = Path.home()/'Library/Application Support/Claude/claude-code'
+    candidates = []
+    for candidate in root.glob('*/*/claude.app/Contents/MacOS/claude'):
+        version = candidate.relative_to(root).parts[0]
+        if re.fullmatch(r'\d+\.\d+\.\d+',version) and candidate.is_file() and os.access(candidate,os.X_OK):
+            candidates.append((tuple(map(int,version.split('.'))),str(candidate)))
+    return max(candidates)[1] if candidates else None
 
-def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024, memory_limit=None):
+def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024, memory_limit=None, allowed_exit_codes=(0,)):
     cancel = cancel or threading.Event()
     if cancel.is_set(): raise error('cancelled')
     start = time.monotonic()
@@ -97,7 +106,7 @@ def run(args, cwd, prompt='', cancel=None, timeout=60, output_limit=2*1024*1024,
             if os.fstat(stdout.fileno()).st_size + os.fstat(stderr.fileno()).st_size > output_limit: raise error('output_limit')
             stdout.seek(0); stderr.seek(0)
             out, err = stdout.read(output_limit).decode('utf-8','replace'), stderr.read(32768).decode('utf-8','replace')
-            if p.returncode: raise error(classify(out+'\n'+err))
+            if p.returncode not in allowed_exit_codes: raise error(classify(out+'\n'+err))
             return out
         finally:
             terminate(p, job)
@@ -122,8 +131,8 @@ class CLIProvider:
 
     def detect(self, refresh=False, cancel=None, timeout=30):
         deadline=time.monotonic()+timeout
-        def check(args,cwd):
-            return run(args,cwd,cancel=cancel,timeout=max(.01,min(6,deadline-time.monotonic())))
+        def check(args,cwd,**kwargs):
+            return run(args,cwd,cancel=cancel,timeout=max(.01,min(6,deadline-time.monotonic())),**kwargs)
         with cancellable_lock(self._lock,cancel,deadline):
             if self._status and not refresh and time.monotonic()-self._checked < 60: return self._status
             exe = locate(self.name)
@@ -134,6 +143,7 @@ class CLIProvider:
                 try:
                     with tempfile.TemporaryDirectory(prefix='course-check-') as d:
                         version = check([exe,'--version'],d).strip()
+                        status['version'] = version
                         helptext = check([exe,'exec','--help'] if self.name=='codex' else [exe,'--help'],d)
                         needed = ['--ignore-user-config','--ignore-rules','--ephemeral','--output-schema','--output-last-message','--sandbox','--model','--json'] if self.name=='codex' else ['--print','--output-format','--json-schema','--tools','--no-session-persistence','--strict-mcp-config','--setting-sources','--settings','--model','--disable-slash-commands','--no-chrome','--safe-mode']
                         if not all(flag in helptext for flag in needed): raise error('capability')
@@ -146,7 +156,18 @@ class CLIProvider:
                             except AppError as e:
                                 if e.code in ['cancelled','timeout']: raise
                                 raise error('auth')
-                        status.update(available=True,version=version,code='ready',message='可用' if self.name=='codex' else '已安装；认证需实际调用验证')
+                        else:
+                            try:
+                                auth = json.loads(check([exe,'auth','status','--json'],d,allowed_exit_codes=(0,1)))
+                            except (ValueError,AppError) as e:
+                                if isinstance(e,AppError) and e.code in ['cancelled','timeout']: raise
+                                auth = {}
+                            if isinstance(auth,dict) and auth.get('loggedIn') is False:
+                                status['authentication'] = '未登录，请在终端登录 Claude Code'
+                                raise error('auth')
+                            if isinstance(auth,dict) and auth.get('loggedIn') is True:
+                                status['authentication'] = '已登录（实际调用仍可能失败）'
+                        status.update(available=True,version=version,code='ready',message='可用' if status['authentication'].startswith('已登录') else '已安装；认证状态未能确认')
                 except AppError as e: status.update(code=e.code,message=e.message)
             self._status, self._checked = status, time.monotonic()
             return status
