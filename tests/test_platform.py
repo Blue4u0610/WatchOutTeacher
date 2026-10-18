@@ -39,7 +39,7 @@ class PlatformTests(unittest.TestCase):
                 exe = root/version/'hash/claude.app/Contents/MacOS/claude'
                 exe.parent.mkdir(parents=True); exe.write_text('test'); exe.chmod(0o700)
             with patch('providers.sys.platform','darwin'), patch('providers.Path.home',return_value=home), patch('providers.shutil.which',return_value=None):
-                self.assertIn('/2.1.299/',locate('claude'))
+                self.assertIn('2.1.299',Path(locate('claude')).parts)
                 self.assertIsNone(locate('codex'))
                 with patch('providers.shutil.which',return_value='/trusted/claude'):
                     self.assertEqual(locate('claude'),'/trusted/claude')
